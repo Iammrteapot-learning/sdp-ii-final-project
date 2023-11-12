@@ -1,6 +1,6 @@
 const port = 5000
 const baseUrl = `http://localhost:${port}`
 
-export const config = {
+export const serviceConfig = {
   baseUrl: baseUrl,
 }
