@@ -41,7 +41,7 @@ export const AuthService = {
   register: async (
     registerRequestBody: RegisterRequestBody
   ): Promise<RegisterResponseBody> => {
-    const url = `${serviceConfig.baseUrl}/api/v1/auth/register`
+    const url = `${serviceConfig.backendBaseUrl}/api/v1/auth/register`
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -59,7 +59,7 @@ export const AuthService = {
   login: async (
     loginRequestBody: LoginRequestBody
   ): Promise<LoginResponseBody> => {
-    const url = `${serviceConfig.baseUrl}/api/v1/auth/login`
+    const url = `${serviceConfig.backendBaseUrl}/api/v1/auth/login`
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -75,7 +75,7 @@ export const AuthService = {
     }
   },
   getUserProfile: async (token: string): Promise<AuthMeResponseBody> => {
-    const url = `${serviceConfig.baseUrl}/api/v1/auth/me`
+    const url = `${serviceConfig.backendBaseUrl}/api/v1/auth/me`
     const response = await fetch(url, {
       method: 'GET',
       headers: {
