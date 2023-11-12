@@ -1,7 +1,11 @@
+import SuccessModal from "@/components/Common/SuccessModal";
+
 export default function Test() {
   return (
     <main>
-      <div>PUT YOUR COMPONENT HERE TO TEST</div>
+      <div>
+        <SuccessModal type="CREATE"/>
+      </div>
     </main>
   )
 }
