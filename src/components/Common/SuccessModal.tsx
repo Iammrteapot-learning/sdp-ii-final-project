@@ -1,21 +1,19 @@
-export default function SuccessModal({type}:{type:string}) {
+export default function SuccessModal({ type }: { type: string }) {
   //remain add "ReservationID" as a prop and IF CREATE fetch res_info
   //add onClick Button Accept
-  let message = ""
-  if (type == "CREATE"){
-    message = "Reservation Completed !"
-  }
-  else if (type == "DELETE"){
-    message = "Your Reservation has successfully been canceled"
-  }
-  else if(type == "UPDATE"){
-    message = "Your Reservation has successfully been modified"
+  let message = ''
+  if (type == 'CREATE') {
+    message = 'Reservation Completed !'
+  } else if (type == 'DELETE') {
+    message = 'Your Reservation has successfully been canceled'
+  } else if (type == 'UPDATE') {
+    message = 'Your Reservation has successfully been modified'
   }
   const ReservationInfo = () => {
     //fetch res info from reserveID
     //mockData
-    const name = "Enoteca Italian restuarant"
-    const date = "Feb 14 , 2024"
+    const name = 'Enoteca Italian restuarant'
+    const date = 'Feb 14 , 2024'
     const number = 2
     return (
       <div className="flex flex-col items-center">
@@ -26,7 +24,9 @@ export default function SuccessModal({type}:{type:string}) {
           <div className="flex space-x-5">
             <p>{date}</p>
             <p>|</p>
-            <p>{number} {number > 1 ? "Guests":"Guest"}</p>
+            <p>
+              {number} {number > 1 ? 'Guests' : 'Guest'}
+            </p>
           </div>
         </div>
         <div className="w-[] mt-3 relative text-center text-red-500 text-sm font-bold font-['Helvetica Neue'] leading-[21px]">
@@ -42,7 +42,7 @@ export default function SuccessModal({type}:{type:string}) {
       <div className=" w-[600px] h-8 relative text-center text-sky-400 text-2xl font-bold font-['Helvetica Neue'] leading-9">
         {message}
       </div>
-      {type == "CREATE" ? ReservationInfo() :null}
+      {type == 'CREATE' ? ReservationInfo() : null}
       <button className="mt-3 px-4 py-2 bg-gray-400 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium font-['Helvetica Neue'] leading-normal">
         Accept
       </button>
