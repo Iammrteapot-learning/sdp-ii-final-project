@@ -1,3 +1,6 @@
+
+import ReservationModal from '@/components/Common/ReservationModal'
+
 export default function Test() {
   return (
     <main>
