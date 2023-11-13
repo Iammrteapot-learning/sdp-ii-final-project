@@ -3,7 +3,7 @@ import SuccessModal from '@/components/Common/SuccessModal/SuccessModal'
 import { useState } from 'react'
 
 export default function ModalTest() {
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(true)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   return (
     <>
       <SuccessModal
