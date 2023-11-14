@@ -33,9 +33,9 @@ export default function SignInForm({
     >
       <div className="flex flex-col w-full">
         <InputField
-          label="email"
+          label="Email"
           name={'signIn/email'}
-          placeholder="email"
+          placeholder="Email"
           arrange="vertical"
           isError={isEmailError}
           errorMessage={errorMessage.email}
