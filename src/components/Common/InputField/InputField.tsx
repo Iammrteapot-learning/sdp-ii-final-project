@@ -36,9 +36,9 @@ export default function InputField({
   return (
     <div className={`flex ${arrangementClass} mb-[6px] w-full`}>
       <label
-        className={`text-base/normal w-[15%] ${
-          arrange === 'horizontal' && isError && 'break-words mt-[-25px]'
-        }`}
+        className={`text-base/normal ${
+          arrange === 'horizontal' ? 'w-[15%]' : ''
+        } ${arrange === 'horizontal' && isError && 'break-words mt-[-25px]'}`}
         htmlFor={name}
       >
         {label}
