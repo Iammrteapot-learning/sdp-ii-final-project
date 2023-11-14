@@ -1,15 +1,47 @@
-export default function RestaurantInfoPanel({location,tel}:{location:string,tel:string}) {
+export default function RestaurantInfoPanel({
+  location,
+  tel,
+}: {
+  location: string
+  tel: string
+}) {
   return (
-    <div className="w-[621px] h-[54px] relative mt-8">
+    <div className="w-[620px] relative mt-4">
       <div className="w-[398px] h-[50px] left-0 top-0 absolute">
-        <img src="images/location.png" width={35} />
+        <svg
+          width="35"
+          height="35"
+          viewBox="0 0 35 35"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M8.83753 7.08739C11.135 4.78996 14.251 3.49927 17.5 3.49927C20.7491 3.49927 23.8651 4.78996 26.1625 7.08739C28.46 9.38483 29.7507 12.5008 29.7507 15.7499C29.7507 18.999 28.46 22.115 26.1625 24.4124L17.5 33.0749L8.83753 24.4124C7.69988 23.2749 6.79744 21.9244 6.18174 20.4381C5.56604 18.9517 5.24915 17.3587 5.24915 15.7499C5.24915 14.1411 5.56604 12.5481 6.18174 11.0617C6.79744 9.57541 7.69988 8.22493 8.83753 7.08739ZM17.5 19.2499C18.4283 19.2499 19.3185 18.8811 19.9749 18.2248C20.6313 17.5684 21 16.6782 21 15.7499C21 14.8216 20.6313 13.9314 19.9749 13.275C19.3185 12.6186 18.4283 12.2499 17.5 12.2499C16.5718 12.2499 15.6815 12.6186 15.0252 13.275C14.3688 13.9314 14 14.8216 14 15.7499C14 16.6782 14.3688 17.5684 15.0252 18.2248C15.6815 18.8811 16.5718 19.2499 17.5 19.2499Z"
+            fill="#EF4444"
+          />
+        </svg>
+
         <div className="w-[352px] h-[50px] left-[46px] top-0 absolute text-black text-sm font-light font-['Helvetica Neue'] leading-[21px]">
           {location}
         </div>
       </div>
       <div className="w-10 h-[0px] ml-96 top-[3px] absolute origin-top-left rotate-90 border border-zinc-400"></div>
       <div className="w-[212px] h-[51px] left-[409px] top-[3px] absolute">
-        <img src="images/phone.png" width={35} />
+        <svg
+          width="30"
+          height="30"
+          viewBox="0 0 30 30"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 4.5C3 4.10218 3.15804 3.72064 3.43934 3.43934C3.72064 3.15804 4.10218 3 4.5 3H7.7295C8.08456 3.00016 8.42805 3.12627 8.69887 3.35589C8.96968 3.58551 9.15027 3.90375 9.2085 4.254L10.3185 10.9065C10.3715 11.2233 10.3215 11.5488 10.1756 11.835C10.0298 12.1213 9.79597 12.3531 9.5085 12.4965L7.1865 13.656C8.01916 15.7195 9.25925 17.5939 10.8327 19.1673C12.4061 20.7408 14.2805 21.9808 16.344 22.8135L17.505 20.4915C17.6483 20.2043 17.8799 19.9706 18.1658 19.8248C18.4518 19.679 18.7769 19.6288 19.0935 19.6815L25.746 20.7915C26.0963 20.8497 26.4145 21.0303 26.6441 21.3011C26.8737 21.572 26.9998 21.9154 27 22.2705V25.5C27 25.8978 26.842 26.2794 26.5607 26.5607C26.2794 26.842 25.8978 27 25.5 27H22.5C11.73 27 3 18.27 3 7.5V4.5Z"
+            fill="#EF4444"
+          />
+        </svg>
+
         <div className="w-[30px] h-[30px] left-0 top-0 absolute" />
         <div className="w-[167px] h-[49px] left-[45px] top-[2px] absolute text-black text-base font-light font-['Helvetica Neue'] leading-normal">
           {tel}
