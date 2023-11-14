@@ -4,25 +4,28 @@ import InputField from '../InputField/InputField'
 
 const errorMessage = {
   password: 'Please fill in your password',
-  username: 'Username is required',
+  email: 'Email is required',
 }
 
 export default function SignInForm({
   handleSignIn,
   handleCreateNewAccount,
 }: {
-  handleSignIn: (username: string, password: string) => void
+  handleSignIn: (email: string, password: string) => void
   handleCreateNewAccount: () => void
 }) {
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isUsernameError, setIsUsernameError] = useState(false)
+  const [isEmailError, setIsEmailError] = useState(false)
   const [isPasswordError, setIsPasswordError] = useState(false)
 
-  const validation = (username: string, password: string): boolean => {
-    setIsUsernameError(username === '')
-    setIsPasswordError(password === '')
-    return username !== '' && password !== ''
+  const validation = (email: string, password: string): boolean => {
+    const isEmailValid =
+      email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/) !== null
+    const isPasswordValid = password !== ''
+    setIsEmailError(!isEmailValid)
+    setIsPasswordError(!isPasswordValid)
+    return isEmailValid && isPasswordValid
   }
 
   return (
@@ -33,13 +36,13 @@ export default function SignInForm({
     >
       <div className="flex flex-col w-full">
         <InputField
-          label="Username"
-          name={'signIn/username'}
-          placeholder="Username"
+          label="Email"
+          name={'signIn/email'}
+          placeholder="Email"
           arrange="vertical"
-          isError={isUsernameError}
-          errorMessage={errorMessage.username}
-          onChange={(value) => setUsername(value)}
+          isError={isEmailError}
+          errorMessage={errorMessage.email}
+          onChange={(value) => setEmail(value)}
         />
         <InputField
           label="Password"
@@ -57,8 +60,8 @@ export default function SignInForm({
           className="px-4 py-2 w-full bg-[#38BDF8] text-white text-base/normal rounded-md"
           type="button"
           onClick={() => {
-            if (validation(username, password)) {
-              handleSignIn(username, password)
+            if (validation(email, password)) {
+              handleSignIn(email, password)
             }
           }}
         >
