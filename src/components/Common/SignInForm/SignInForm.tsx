@@ -20,9 +20,12 @@ export default function SignInForm({
   const [isPasswordError, setIsPasswordError] = useState(false)
 
   const validation = (email: string, password: string): boolean => {
-    setIsEmailError(email === '')
-    setIsPasswordError(password === '')
-    return email !== '' && password !== ''
+    const isEmailValid =
+      email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/) !== null
+    const isPasswordValid = password !== ''
+    setIsEmailError(!isEmailValid)
+    setIsPasswordError(!isPasswordValid)
+    return isEmailValid && isPasswordValid
   }
 
   return (
