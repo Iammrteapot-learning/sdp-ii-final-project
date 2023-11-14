@@ -2,12 +2,14 @@
 import ErrorModal from '@/components/Common/ErrorModal/ErrorModal'
 import ReservationModal from '@/components/Common/ReservationModal/ReservationModal'
 import SuccessModal from '@/components/Common/SuccessModal/SuccessModal'
+import WarningModal from '@/components/Common/WarningModal/WarningModal'
 import { useState } from 'react'
 
 export default function ModalTest() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
-  const [isErrorModalOpen,setIsErrorModalOpen] = useState(false)
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
+  const [isWarningModalOpen,setIsWarningModalOpen] = useState(false)
   return (
     <>
       <SuccessModal
@@ -22,6 +24,11 @@ export default function ModalTest() {
       <ErrorModal
         isVisible={isErrorModalOpen}
         onClose={() => setIsErrorModalOpen(false)}
+      />
+      <WarningModal
+        type={'DELETE'}
+        isVisible={isWarningModalOpen}
+        onClose={() => setIsWarningModalOpen(false)}
       />
       <button
         className="bg-slate-400 w-fit h-fit p-2 rounded-md text-center"
@@ -38,6 +45,12 @@ export default function ModalTest() {
       <button
         className="ml-3 bg-red-400 w-fit h-fit p-2 rounded-md text-center"
         onClick={() => setIsErrorModalOpen(true)}
+      >
+        OPEN Error Modal
+      </button>
+      <button
+        className="ml-3 bg-yellow-400 w-fit h-fit p-2 rounded-md text-center"
+        onClick={() => setIsWarningModalOpen(true)}
       >
         OPEN Error Modal
       </button>
