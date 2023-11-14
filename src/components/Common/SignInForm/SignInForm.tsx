@@ -4,7 +4,7 @@ import InputField from '../InputField/InputField'
 
 const errorMessage = {
   password: 'Please fill in your password',
-  email: 'email is required',
+  email: 'Email is required',
 }
 
 export default function SignInForm({
