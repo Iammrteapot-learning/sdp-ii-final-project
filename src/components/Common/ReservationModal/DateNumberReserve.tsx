@@ -2,46 +2,61 @@
 import { DatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { Dayjs } from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 import { useState } from 'react'
 import TextField from '@mui/material/TextField'
+import { DateValidationError } from '@mui/x-date-pickers/models'
+
 import { Unstable_NumberInput as NumberInput } from '@mui/base/Unstable_NumberInput'
 
 export default function DateNumberReserve({
   onDateChange,
   onNumberChange,
+  isError,
 }: {
   onDateChange: Function
   onNumberChange: Function
+  isError: boolean
 }) {
   const [reserveDate, setReserveDate] = useState<Dayjs | null>(null)
   const [reserveNumber, setReserveNumber] = useState<number>(1)
+  // const [error, setError] = useState(false)
+  // const errorMessage = 'Please fill in your reservation date'
   return (
     <div className="w-[500px] h-[130px] relative ">
       <div className="w-[500px] h-40 left-0 absolute opacity-50 bg-zinc-200 rounded-[30px]" />
-      <div className="w-[439px] h-auto left-[63px] top-[11px] absolute flex flex-row justify-center space-x-32">
+      <div className="w-[439px] h-auto left-[63px] top-[11px] absolute flex flex-row justify-center space-x-32 ">
         <div className="left-0 top-[10px] absolute text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
           Reservation Date
         </div>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            className="bg-white"
-            value={reserveDate}
-            onChange={(value) => {
-              setReserveDate(value)
-              onDateChange(value)
-            }}
-          />
-        </LocalizationProvider>
+        <div className="flex flex-col">
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              // className="bg-white"
+              className={
+                isError
+                  ? 'rounded ring-offset-1 ring-1 ring-red-500 bg-white'
+                  : 'bg-white'
+              }
+              value={reserveDate}
+              disablePast={true}
+              onChange={(value) => {
+                setReserveDate(value)
+                onDateChange(value)
+              }}
+            />
+            {isError ? <div className='text-xs text-red-500 mt-1'>* Please Enter Your Reservation Date</div>:null}
+          </LocalizationProvider>
+        </div>
       </div>
-      <div className="w-auto h-auto left-[31px] top-[65px] absolute flex flex-row justify-start">
+      <div className="w-auto h-auto left-[31px] top-[80px] absolute flex flex-row justify-start">
         <svg
           width="14"
           height="15"
           viewBox="0 0 14 15"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className='mt-8'
+          className="mt-8"
         >
           <path
             fill-rule="evenodd"

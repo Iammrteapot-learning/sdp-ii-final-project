@@ -1,3 +1,4 @@
+
 import { Button } from '@mui/material'
 
 export default function BookNowButton({ onClick }: { onClick: () => void }) {

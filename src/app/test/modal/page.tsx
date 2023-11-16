@@ -10,6 +10,10 @@ export default function ModalTest() {
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
   const [isWarningModalOpen,setIsWarningModalOpen] = useState(false)
+  const name = "Enoteca Italian restaurant"
+  const address = "Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon"
+  const tel = "081-234-5678"
+
   return (
     <>
       <SuccessModal
@@ -18,6 +22,9 @@ export default function ModalTest() {
         onClose={() => setIsSuccessModalOpen(false)}
       />
       <ReservationModal
+        address={address}
+        tel={tel}
+        name={name}
         isVisible={isReservationModalOpen}
         onClose={() => setIsReservationModalOpen(false)}
       />
