@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face{
+  font-family: Helvetica-Neue;
+  src: url(/fonts/Helvetica-Neue/Helvetica-Neue-67-Medium-Condensed.otf);
+}
+.Helvatica-Neue{
+  font-family: Helvetica-Neue;
+}
+
+@font-face{
+  font-family: Helvetica-Neue-Light;
+  src: url(/fonts/Helvetica-Neue/Helvetica-Neue-Regular.otf);
+}
+.Helvatica-Neue{
+  font-family: Helvetica-Neue-Light;
+}
+
+@font-face{
+  font-family: Helvetica-Neue-Italic;
+  src: url(/fonts/Helvetica-Neue/Helvetica-Neue-Italic.otf);
+}
+.Helvatica-Neue{
+  font-family: Helvetica-Neue-Italic;
+}
+
+@font-face{
+  font-family: Helvetica-Neue-Bold;
+  src: url(/fonts/Helvetica-Neue/Helvetica-Neue-Condensed-Bold.ttf);
+}
+.Helvatica-Neue{
+  font-family: Helvetica-Neue-Bold;
+}
+
+@font-face{
+  font-family: Helvetica-Neue-Black;
+  src: url(/fonts/Helvetica-Neue/Helvetica-Neue-Black-Condensed.otf);
+}
+.Helvatica-Neue{
+  font-family: Helvetica-Neue-Black;
+}
+
+@font-face{
+  font-family: Helvetica-Neue-Black-Italic;
+  src: url(/fonts/Helvetica-Neue/Helvetica-Neue-Black-Condensed-Oblique.otf);
+}
+.Helvatica-Neue{
+  font-family: Helvetica-Neue-Black-Italic;
+}
+
 * {
   margin: 0;
   padding: 0;
