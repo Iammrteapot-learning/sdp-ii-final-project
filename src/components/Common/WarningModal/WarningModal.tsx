@@ -10,15 +10,17 @@ const WarningModalMessage: Record<WarningModalType, string> = {
 export default function WarningModal({
   type,
   isVisible,
-  onClose,
+  onClose_Dismiss,
+  onClose_Confirm,
 }: {
   type: WarningModalType
   isVisible: boolean
-  onClose: () => void
+  onClose_Dismiss: () => void
+  onClose_Confirm: () => void
 }) {
   const message = WarningModalMessage[type]
   return (
-    <ModalOverlay isVisible={isVisible} onClose={onClose}>
+    <ModalOverlay isVisible={isVisible} onClose={onClose_Dismiss}>
       <div className="w-fit h-auto p-4 relative bg-zinc-100 rounded-[30px] shadow flex flex-col items-center">
         <svg
           width="35"
@@ -39,12 +41,15 @@ export default function WarningModal({
           {message}
         </div>
         <div className="w-[230px] h-10 mt-3 relative space-x-10">
-          <button className="px-4 py-2 bg-sky-400 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium">
+          <button
+            className="px-4 py-2 bg-sky-400 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium"
+            onClick={onClose_Confirm}
+          >
             Confirm
           </button>
           <button
             className="px-4 py-2 bg-red-500 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium"
-            onClick={onClose}
+            onClick={onClose_Dismiss}
           >
             Dismiss
           </button>

@@ -20,8 +20,6 @@ export default function DateNumberReserve({
 }) {
   const [reserveDate, setReserveDate] = useState<Dayjs | null>(null)
   const [reserveNumber, setReserveNumber] = useState<number>(1)
-  // const [error, setError] = useState(false)
-  // const errorMessage = 'Please fill in your reservation date'
   return (
     <div className="w-[500px] h-[130px] relative ">
       <div className="w-[500px] h-40 left-0 absolute opacity-50 bg-zinc-200 rounded-[30px]" />
