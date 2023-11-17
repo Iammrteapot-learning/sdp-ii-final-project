@@ -13,7 +13,7 @@ const errorClass = 'focus:ring-red-500 focus:border-red-500 border-red-300'
 export default function InputField({
   name,
   placeholder,
-  label,
+  label = '',
   arrange = 'horizontal',
   required = false,
   isError = false,
@@ -23,7 +23,7 @@ export default function InputField({
 }: {
   name: string
   placeholder?: string
-  label: string
+  label?: string
   arrange?: InputFieldArrangement
   required?: boolean
   isError?: boolean
@@ -35,14 +35,15 @@ export default function InputField({
 
   return (
     <div className={`flex ${arrangementClass} mb-[6px] w-full`}>
-      <label
+      {label != "" ? <label
         className={`text-base/normal ${
           arrange === 'horizontal' ? 'w-[15%]' : ''
         } ${arrange === 'horizontal' && isError && 'break-words mt-[-25px]'}`}
         htmlFor={name}
       >
         {label}
-      </label>
+      </label>:null}
+      
 
       <div className={`${arrange === 'horizontal' ? 'w-[85%]' : ''}`}>
         <input
