@@ -1,3 +1,4 @@
+import NavigationBar from '@/components/Common/NavigationBar/NavigationBar'
 import React from 'react'
 
 export default function UserLayout({
@@ -5,5 +6,10 @@ export default function UserLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <>{children}</>
+  return (
+    <main className="pt-[56px]">
+      <NavigationBar />
+      {children}
+    </main>
+  )
 }
