@@ -1,4 +1,4 @@
-const backendBaseUrl = process.env.BACKEND_DOMAIN || 'http://localhost:5000'
+const backendBaseUrl = 'https://sdp-ii-backend-fork.vercel.app:443'
 
 export const serviceConfig = {
   backendBaseUrl: backendBaseUrl,
