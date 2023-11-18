@@ -3,7 +3,7 @@ import { useState } from 'react'
 import InputField from '../InputField/InputField'
 
 const errorMessage = {
-  password: 'Please fill in your password',
+  password: 'Password must be at least 6 characters',
   email: 'Email does not match',
   tel: 'Please fill in your phone number',
   name: 'Username is required',
@@ -13,6 +13,7 @@ const errorMessage = {
 export default function SignUpForm({
   handleSignUp,
   handleBackToSignIn,
+  isLoading,
 }: {
   handleSignUp: ({
     username,
@@ -23,9 +24,10 @@ export default function SignUpForm({
     username: string
     tel: string
     email: string
-    password: String
+    password: string
   }) => void
   handleBackToSignIn: () => void
+  isLoading: boolean
 }) {
   const [username, setUsername] = useState('')
   const [tel, setTel] = useState('')
@@ -52,10 +54,10 @@ export default function SignUpForm({
     retypePassword: string
   }): boolean => {
     const isUsernameValid = username !== ''
-    const isTelValid = tel !== ''
+    const isTelValid = tel.length === 10
     const isEmailValid =
       email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/) !== null
-    const isPasswordValid = password !== ''
+    const isPasswordValid = password.length >= 6
     const isRetypePasswordValid = retypePassword === password
 
     setIsUsernameError(!isUsernameValid)
@@ -125,7 +127,8 @@ export default function SignUpForm({
       </div>
       <div className="flex flex-col w-full">
         <button
-          className="mt-4 px-4 py-2 w-full bg-[#38BDF8] text-white text-base/normal rounded-md"
+          className="mt-4 px-4 py-2 w-full bg-[#38BDF8] text-white text-base/normal rounded-md
+          hover:bg-blue-600"
           type="button"
           onClick={() => {
             if (
@@ -135,7 +138,7 @@ export default function SignUpForm({
             }
           }}
         >
-          Sign Up
+          {isLoading ? 'Loading ...' : 'Sign Up'}
         </button>
         <div className="flex flew-row text-gray-500 text-xs w-full gap-1 py-1">
           <div>Already has an account?</div>

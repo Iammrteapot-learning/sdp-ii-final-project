@@ -10,9 +10,11 @@ const errorMessage = {
 export default function SignInForm({
   handleSignIn,
   handleCreateNewAccount,
+  isLoading,
 }: {
   handleSignIn: (email: string, password: string) => void
   handleCreateNewAccount: () => void
+  isLoading: boolean
 }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -57,7 +59,8 @@ export default function SignInForm({
       </div>
       <div className="flex flex-col w-full">
         <button
-          className="px-4 py-2 w-full bg-[#38BDF8] text-white text-base/normal rounded-md"
+          className="px-4 py-2 w-full bg-[#38BDF8] text-white text-base/normal rounded-md
+          hover:bg-blue-600"
           type="button"
           onClick={() => {
             if (validation(email, password)) {
@@ -65,7 +68,7 @@ export default function SignInForm({
             }
           }}
         >
-          Sign In
+          {isLoading ? 'Loading ...' : 'Sign In'}
         </button>
         <div className="flex flew-row text-gray-500 text-xs w-full gap-1 py-1">
           <div>Don't have an account?</div>
