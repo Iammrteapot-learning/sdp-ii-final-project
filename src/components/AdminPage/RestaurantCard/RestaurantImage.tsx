@@ -15,7 +15,7 @@ export default function RestaurantImage({
     return (
       <Link href={`/admin/restaurants/${res_id}`}>
         <div
-          className="w-[60%] h-[18px] z-40 left-[63px] bottom-[2px] absolute bg-zinc-400 rounded-[20px]"
+          className="w-[60%] h-[18px] left-[63px] bottom-[2px] absolute bg-zinc-400 rounded-[20px]"
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
         >
@@ -67,15 +67,13 @@ export default function RestaurantImage({
           objectFit="cover"
         />
       )}
-
-      {hovering && <ViewDetailLabel />}
       <Link href={`/admin/restaurants/${res_id}`}>
         <button
           onMouseEnter={() => setHovering(true)}
           onMouseLeave={() => setHovering(false)}
         >
           <svg
-            className="z-30 left-[140px] bottom-0 absolute"
+            className="left-[140px] bottom-0 absolute"
             width="20"
             height="20"
             viewBox="0 0 20 20"
@@ -99,6 +97,7 @@ export default function RestaurantImage({
           </svg>
         </button>
       </Link>
+      {hovering && <ViewDetailLabel />}
     </div>
   )
 }

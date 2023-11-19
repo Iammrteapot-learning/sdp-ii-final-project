@@ -1,5 +1,6 @@
 'use client'
 import ModalOverlay from '@/components/Common/ModalOverlay/ModalOverlay'
+import SuccessIcon from '../Icon/SuccessIcon'
 
 const ReservationInfo = ({
   name,
@@ -61,7 +62,7 @@ export default function SuccessModal(props: SuccessModalProps) {
   return (
     <ModalOverlay isVisible={isVisible} onClose={onClose}>
       <div className="w-fit h-auto p-4 relative bg-zinc-100 rounded-[30px] shadow flex flex-col items-center">
-        <img src="images/check-circle.png" />
+        <SuccessIcon />
         <div className=" w-[600px] h-8 relative text-center text-sky-400 text-2xl font-bold font-['Helvetica Neue'] leading-9">
           {message}
         </div>

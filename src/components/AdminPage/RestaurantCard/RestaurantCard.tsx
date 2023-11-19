@@ -7,6 +7,9 @@ import EditIcon from '@/components/Common/Icon/EditIcon'
 import LocationIcon from '@/components/Common/Icon/LocationIcon'
 import PhoneIcon from '@/components/Common/Icon/PhoneIcon'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import RestaurantModal from '../RestaurantModal/RestaurantModal'
+import WarningModal from '@/components/Common/WarningModal/WarningModal'
 
 export default function RestaurantCard({
   name,
@@ -27,9 +30,11 @@ export default function RestaurantCard({
     router.push(`/admin/restaurants/${id}`)
   }
 
-  //TODO: Integrate this functions with modal
-  const handleEdit = () => {}
   const handleDelete = () => {}
+
+  const [isShowEditModal, setIsShowEditModal] = useState(false)
+  const [isShowConfirmDeleteModal, setIsShowConfirmDeleteModal] =
+    useState(false)
 
   return (
     <div
@@ -60,7 +65,10 @@ export default function RestaurantCard({
               ))}
             </div>
           </div>
-          <div className="cursor-pointer h-fit w-fit" onClick={handleEdit}>
+          <div
+            className="cursor-pointer h-fit w-fit"
+            onClick={() => setIsShowEditModal(true)}
+          >
             <EditIcon />
           </div>
         </div>
@@ -81,6 +89,19 @@ export default function RestaurantCard({
           <DeleteRestaurantButton onClick={handleDelete} />
         </div>
       </div>
+      <RestaurantModal
+        isVisible={isShowEditModal}
+        onClose={() => setIsShowEditModal(false)}
+        modalType={'edit'}
+        restaurantId={id}
+      />
+      <WarningModal
+        type={'DELETE'}
+        isVisible={isShowConfirmDeleteModal}
+        onClose_Dismiss={() => setIsShowConfirmDeleteModal(false)}
+        onClose_Confirm={() => {}}
+        id={id}
+      />
     </div>
   )
 }
