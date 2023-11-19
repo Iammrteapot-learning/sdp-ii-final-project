@@ -41,25 +41,23 @@ const SuccessModalMessage: Record<SuccessModalType, string> = {
   UPDATE: 'Your Reservation has successfully been modified',
 }
 
-export default function SuccessModal({
-  type,
-  isVisible,
-  onClose,
-}: {
+type SuccessModalProps = {
   type: SuccessModalType
   isVisible: boolean
   onClose: () => void
-}) {
+  name?: string
+  date?: string
+  number?: number
+}
+
+export default function SuccessModal(props: SuccessModalProps) {
   //remain add "ReservationID" as a prop and IF CREATE fetch res_info
   //add onClick Button Accept
+  const { type, isVisible, onClose } = props
+
   const message = SuccessModalMessage[type]
 
   //fetch res info from reserveID
-  //mockData
-  const name = 'Enoteca Italian restuarant'
-  const date = 'Feb 14 , 2024'
-  const number = 2
-
   return (
     <ModalOverlay isVisible={isVisible} onClose={onClose}>
       <div className="w-fit h-auto p-4 relative bg-zinc-100 rounded-[30px] shadow flex flex-col items-center">
@@ -67,7 +65,13 @@ export default function SuccessModal({
         <div className=" w-[600px] h-8 relative text-center text-sky-400 text-2xl font-bold font-['Helvetica Neue'] leading-9">
           {message}
         </div>
-        {type === 'CREATE' ? ReservationInfo({ name, date, number }) : null}
+        {type === 'CREATE' ? (
+          <ReservationInfo
+            name={props.name ?? 'Enoteca Italian restuarant'}
+            date={props.date ?? 'Feb 14 , 2024'}
+            number={props.number ?? 2}
+          />
+        ) : null}
         <button
           className="mt-3 px-4 py-2 bg-gray-400 rounded justify-start 
         items-center gap-2 inline-flex text-white text-base font-medium 
