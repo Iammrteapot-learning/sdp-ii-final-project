@@ -7,6 +7,13 @@ import EditIcon from '@/components/Common/Icon/EditIcon'
 import LocationIcon from '@/components/Common/Icon/LocationIcon'
 import PhoneIcon from '@/components/Common/Icon/PhoneIcon'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import RestaurantModal from '../RestaurantModal/RestaurantModal'
+import WarningModal from '@/components/Common/WarningModal/WarningModal'
+import {
+  RestaurantInformation,
+  RestaurantService,
+} from '@/services/RestaurantService'
 
 export default function RestaurantCard({
   name,
@@ -31,12 +38,36 @@ export default function RestaurantCard({
   const handleEdit = () => {}
   const handleDelete = () => {}
 
+  const [isShowEditModal, setIsShowEditModal] = useState(false)
+  const [isShowConfirmEditModal, setIsShowConfirmEditModal] = useState(false)
+  const [isShowConfirmDeleteModal, setIsShowConfirmDeleteModal] =
+    useState(false)
+
   return (
     <div
       className="w-[820px] bg-gray-50 rounded-xl shadow-[0_0_4px_0_rgba(0,0,0,0.25)]
       py-4 px-6 flex justify-between 
     "
     >
+      <RestaurantModal
+        isVisible={isShowEditModal}
+        onClose={() => setIsShowEditModal(false)}
+        modalType={'edit'}
+      />
+      <WarningModal
+        type={'UPDATE'}
+        isVisible={isShowConfirmEditModal}
+        onClose_Dismiss={() => setIsShowConfirmEditModal(false)}
+        onClose_Confirm={() => handleEdit()}
+        id={id}
+      />
+      <WarningModal
+        type={'DELETE'}
+        isVisible={isShowConfirmDeleteModal}
+        onClose_Dismiss={() => setIsShowConfirmDeleteModal(false)}
+        onClose_Confirm={() => handleDelete()}
+        id={id}
+      />
       <div>
         <RestaurantImage img={'/images/italian.png'} res_id={''} />
       </div>
