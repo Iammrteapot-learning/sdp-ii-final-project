@@ -80,10 +80,11 @@ export const RestaurantService = {
     }
   },
   editRestaurantById: async (
+    restaurantId: string,
     requestBody: RestaurantInformation,
     token: string
   ): Promise<RestaurantInformation> => {
-    const url = `${serviceConfig.backendBaseUrl}/api/v1/restaurants/${requestBody.id}`
+    const url = `${serviceConfig.backendBaseUrl}/api/v1/restaurants/${restaurantId}`
     const response = await fetch(url, {
       method: 'PUT',
       headers: {
