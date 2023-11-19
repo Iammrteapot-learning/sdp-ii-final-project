@@ -1,6 +1,9 @@
+'use client'
 import RestaurantResult from '@/components/UserPage/RestaurantResult/RestaurantResult'
 import SearchBar from '@/components/UserPage/SearchBar/SearchBar'
+import searchFilter from '@/services/RestaurantService/searchFilter'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function UserRestaurantsPage() {
   //mock data
@@ -16,23 +19,25 @@ export default function UserRestaurantsPage() {
     name: 'Enoteca Italian restaurant',
     img: '/images/italian.png',
     foodType: 'Italian cuisine',
-    province: 'Bangkok',
+    province: 'Krabi',
   }
   const res_3 = {
     id: '001',
     name: 'Enoteca Italian restaurant',
     img: '/images/italian.png',
     foodType: 'Italian cuisine',
-    province: 'Bangkok',
+    province: 'Phuket',
   }
   const res_4 = {
     id: '001',
     name: 'Enoteca Italian restaurant',
     img: '/images/italian.png',
     foodType: 'Italian cuisine',
-    province: 'Bangkok',
+    province: 'Chiangmai',
   }
-  const res_list = [res_1, res_2, res_3, res_4, res_1, res_1]
+  const res_list = [res_1, res_2, res_3, res_4]
+  const [filterList,setFilterList] = useState<object[]>(res_list)
+
   return (
     <div className="w-full flex flex-col justify-center items-center mt-32">
       <div
@@ -41,9 +46,9 @@ export default function UserRestaurantsPage() {
       >
         FIND YOUR RESTAURANTS
       </div>
-      <SearchBar />
+      <SearchBar onChange={(searchWord:string) => setFilterList(searchFilter({res_list,searchWord}))}/>
       <div className="flex flex-row w-[1000px] justify-around flex-wrap content-around p-4 m-4">
-        {res_list.map((res: Object) => (
+        {filterList.map((res: Object) => (
           <Link
             href={`/user/restaurants/${res.id}`}
             className="w-[51%] sm:w-[58%] md:w-[35%] lg:w-[30%] p-1 sm:p-2 md:p-2 lg:p-4"
