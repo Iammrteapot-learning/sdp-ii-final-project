@@ -5,6 +5,14 @@ import InputFieldWithOutLabel from '@/components/Common/InputFieldWithOutLabel/I
 import LocationIcon from '@/components/Common/Icon/LocationIcon'
 import ImageIcon from '@/components/Common/Icon/ImageIcon'
 import { useCallback, useState } from 'react'
+import {
+  RestaurantInformation,
+  RestaurantService,
+} from '@/services/RestaurantService'
+import WarningModal from '@/components/Common/WarningModal/WarningModal'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import SuccessModal from '@/components/Common/SuccessModal/SuccessModal'
 
 type ModalType = 'create' | 'edit'
 
@@ -19,7 +27,7 @@ type InputType =
 
 const placeholderMessage: Record<InputType, string> = {
   name: 'Enter restaurant name',
-  foodType: 'e.g. Thai Chinese Japanese',
+  foodType: 'e.g. Thai, Chinese, Japanese',
   address: 'Enter your address',
   province: 'Bangkok',
   postalCode: '10100',
@@ -41,29 +49,13 @@ const errorMessage: Record<
 export default function RestaurantModal({
   isVisible,
   onClose,
-  handleConfirm,
   modalType,
+  restaurantId,
 }: {
   isVisible: boolean
   onClose: () => void
-  handleConfirm: ({
-    name,
-    foodType,
-    address,
-    province,
-    postalCode,
-    telephone,
-    imageUrl,
-  }: {
-    name: string
-    foodType: string
-    address: string
-    province: string
-    postalCode: string
-    telephone: string
-    imageUrl: string
-  }) => void
   modalType: ModalType
+  restaurantId?: string
 }) {
   const [name, setName] = useState('')
   const [foodType, setFoodType] = useState('')
@@ -78,6 +70,17 @@ export default function RestaurantModal({
   const [isProvinceError, setIsProvinceError] = useState(false)
   const [isPostalCodeError, setIsPostalCodeError] = useState(false)
   const [isTelephoneError, setIsTelephoneError] = useState(false)
+
+  const [isShowWarningModal, setIsShowWarningModal] = useState(false)
+  const [isShowSuccessModal, setIsShowSuccessModal] = useState(false)
+
+  const router = useRouter()
+  const { data: session } = useSession()
+  if (!session) {
+    alert('Please login to access this page')
+    router.push('/admin/auth')
+    return
+  }
 
   const validateInput = useCallback(() => {
     const isNameValid = name !== ''
@@ -112,140 +115,167 @@ export default function RestaurantModal({
     setIsTelephoneError,
   ])
 
+  const handleConfirmEdit = async (request: RestaurantInformation) => {
+    await RestaurantService.editRestaurantById(request, session.user.token)
+  }
+
   return (
-    <ModalOverlay isVisible={isVisible} onClose={onClose}>
-      <div
-        className="w-[735px] px-16 pt-8 pb-8 bg-zinc-100 shadow rounded-[30px]
-        flex flex-col gap-3 items-center"
-      >
-        <ModalHeaderText
-          label={
-            modalType === 'create' ? 'Create Restaurant' : 'Edit Restaurant'
+    <>
+      <SuccessModal
+        type={modalType === 'create' ? 'CREATE' : 'UPDATE'}
+        isVisible={isShowSuccessModal}
+        onClose={() => setIsShowSuccessModal(false)}
+      />
+      {modalType === 'edit' && (
+        <WarningModal
+          type={'UPDATE'}
+          isVisible={isShowWarningModal}
+          onClose_Dismiss={() => setIsShowWarningModal(false)}
+          onClose_Confirm={() =>
+            handleConfirmEdit({
+              name,
+              address,
+              foodtype: foodType,
+              province,
+              postalcode: postalCode,
+              tel: telephone,
+              picture: imageUrl,
+            })
           }
+          id={restaurantId ?? ''}
         />
-        <div className="w-full flex items-center">
-          <label htmlFor="restaurant-name" className="w-[30%] text-right pe-4">
-            Restaurant Name
-          </label>
-          <div className="w-[60%]">
-            <InputFieldWithOutLabel
-              name={'restaurant-name'}
-              onChange={(value) => setName(value)}
-              placeholder={placeholderMessage['name']}
-              isError={isNameError}
-              errorMessage={errorMessage['name']}
-            />
+      )}
+      <ModalOverlay isVisible={isVisible} onClose={onClose}>
+        <div
+          className="w-[735px] px-16 pt-8 pb-8 bg-zinc-100 shadow rounded-[30px]
+        flex flex-col gap-3 items-center"
+        >
+          <ModalHeaderText
+            label={
+              modalType === 'create' ? 'Create Restaurant' : 'Edit Restaurant'
+            }
+          />
+          <div className="w-full flex items-center">
+            <label
+              htmlFor="restaurant-name"
+              className="w-[30%] text-right pe-4"
+            >
+              Restaurant Name
+            </label>
+            <div className="w-[60%]">
+              <InputFieldWithOutLabel
+                name={'restaurant-name'}
+                onChange={(value) => setName(value)}
+                placeholder={placeholderMessage['name']}
+                isError={isNameError}
+                errorMessage={errorMessage['name']}
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-full flex items-center">
-          <label htmlFor="food-type" className="w-[30%] text-right pe-4">
-            Food Type
-          </label>
-          <div className="w-[40%]">
-            <InputFieldWithOutLabel
-              name={'food-type'}
-              onChange={(value) => setFoodType(value)}
-              placeholder={placeholderMessage['foodType']}
-            />
+          <div className="w-full flex items-center">
+            <label htmlFor="food-type" className="w-[30%] text-right pe-4">
+              Food Type
+            </label>
+            <div className="w-[40%]">
+              <InputFieldWithOutLabel
+                name={'food-type'}
+                onChange={(value) => setFoodType(value)}
+                placeholder={placeholderMessage['foodType']}
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-full flex items-center gap-4">
-          <LocationIcon />
-          <label htmlFor="address" className="w-[10%] text-right pe-4">
-            Address
-          </label>
-          <div className="w-[75%]">
-            <InputFieldWithOutLabel
-              name={'address'}
-              onChange={(value) => setAddress(value)}
-              placeholder={placeholderMessage['address']}
-              isError={isAddressError}
-              errorMessage={errorMessage['address']}
-            />
+          <div className="w-full flex items-center gap-4">
+            <LocationIcon />
+            <label htmlFor="address" className="w-[10%] text-right pe-4">
+              Address
+            </label>
+            <div className="w-[75%]">
+              <InputFieldWithOutLabel
+                name={'address'}
+                onChange={(value) => setAddress(value)}
+                placeholder={placeholderMessage['address']}
+                isError={isAddressError}
+                errorMessage={errorMessage['address']}
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-full flex items-center gap-4 ps-[38px]">
-          <label htmlFor="province" className="w-[10%] text-right me-[6px]">
-            Province
-          </label>
-          <div className="w-[30%]">
-            <InputFieldWithOutLabel
-              name={'province'}
-              onChange={(value) => setProvince(value)}
-              placeholder={placeholderMessage['province']}
-              isError={isProvinceError}
-              errorMessage={errorMessage['province']}
-            />
+          <div className="w-full flex items-center gap-4 ps-[38px]">
+            <label htmlFor="province" className="w-[10%] text-right me-[6px]">
+              Province
+            </label>
+            <div className="w-[30%]">
+              <InputFieldWithOutLabel
+                name={'province'}
+                onChange={(value) => setProvince(value)}
+                placeholder={placeholderMessage['province']}
+                isError={isProvinceError}
+                errorMessage={errorMessage['province']}
+              />
+            </div>
+            <label htmlFor="postal_code" className="w-[15%] text-right ">
+              Postal Code
+            </label>
+            <div className="w-[30%]">
+              <InputFieldWithOutLabel
+                name={'postal_code'}
+                onChange={(value) => setPostalCode(value)}
+                placeholder={placeholderMessage['postalCode']}
+                isError={isPostalCodeError}
+                errorMessage={errorMessage['postalCode']}
+              />
+            </div>
           </div>
-          <label htmlFor="postal_code" className="w-[15%] text-right ">
-            Postal Code
-          </label>
-          <div className="w-[30%]">
-            <InputFieldWithOutLabel
-              name={'postal_code'}
-              onChange={(value) => setPostalCode(value)}
-              placeholder={placeholderMessage['postalCode']}
-              isError={isPostalCodeError}
-              errorMessage={errorMessage['postalCode']}
-            />
+          <div className="w-full flex items-center gap-4 ps-[42px]">
+            <label htmlFor="telephone" className="w-[10%] text-right me-1">
+              Tel
+            </label>
+            <div className="w-[60%]">
+              <InputFieldWithOutLabel
+                name={'telephone'}
+                onChange={(value) => setTelephone(value)}
+                placeholder={placeholderMessage['telephone']}
+                isError={isTelephoneError}
+                errorMessage={errorMessage['telephone']}
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-full flex items-center gap-4 ps-[42px]">
-          <label htmlFor="telephone" className="w-[10%] text-right me-1">
-            Tel
-          </label>
-          <div className="w-[60%]">
-            <InputFieldWithOutLabel
-              name={'telephone'}
-              onChange={(value) => setTelephone(value)}
-              placeholder={placeholderMessage['telephone']}
-              isError={isTelephoneError}
-              errorMessage={errorMessage['telephone']}
-            />
+          <div className="w-full flex items-center gap-2 mb-4">
+            <ImageIcon />
+            <label htmlFor="image-url" className="w-[20%] text-right me-2">
+              Upload Image
+            </label>
+            <div className="w-[70%]">
+              <InputFieldWithOutLabel
+                name={'image-url'}
+                onChange={(value) => setImageUrl(value)}
+                placeholder={placeholderMessage['imageUrl']}
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-full flex items-center gap-2 mb-4">
-          <ImageIcon />
-          <label htmlFor="image-url" className="w-[20%] text-right me-2">
-            Upload Image
-          </label>
-          <div className="w-[70%]">
-            <InputFieldWithOutLabel
-              name={'image-url'}
-              onChange={(value) => setImageUrl(value)}
-              placeholder={placeholderMessage['imageUrl']}
-            />
-          </div>
-        </div>
-        <div className="flex justify-center items-center gap-10">
-          <button
-            className="px-4 py-2 bg-sky-400 rounded justify-start items-center 
+          <div className="flex justify-center items-center gap-10">
+            <button
+              className="px-4 py-2 bg-sky-400 rounded justify-start items-center 
           gap-2 inline-flex text-white text-base font-medium hover:bg-blue-500"
-            onClick={() => {
-              if (validateInput()) {
-                handleConfirm({
-                  name,
-                  foodType,
-                  address,
-                  province,
-                  postalCode,
-                  telephone,
-                  imageUrl,
-                })
-              }
-            }}
-          >
-            Confirm
-          </button>
-          <button
-            className="px-4 py-2 bg-red-500 rounded justify-start items-center 
+              onClick={() => {
+                if (validateInput()) {
+                  if (modalType === 'edit') {
+                    setIsShowWarningModal(true)
+                  }
+                }
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              className="px-4 py-2 bg-red-500 rounded justify-start items-center 
           gap-2 inline-flex text-white text-base font-medium hover:bg-red-700"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
-    </ModalOverlay>
+      </ModalOverlay>
+    </>
   )
 }
