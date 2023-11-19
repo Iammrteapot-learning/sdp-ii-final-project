@@ -12,11 +12,13 @@ export default function WarningModal({
   isVisible,
   onClose_Dismiss,
   onClose_Confirm,
+  id,
 }: {
   type: WarningModalType
   isVisible: boolean
   onClose_Dismiss: () => void
   onClose_Confirm: () => void
+  id:string
 }) {
   const message = WarningModalMessage[type]
   return (
@@ -37,8 +39,8 @@ export default function WarningModal({
           />
         </svg>
 
-        <div className=" h-8 relative text-center text-red-500 text-2xl font-bold font-['Helvetica Neue'] leading-9">
-          {message}
+        <div className=" relative text-center text-red-500 text-2xl font-bold font-['Helvetica Neue'] leading-9">
+          {message} <br/> Reservation ID : {id}
         </div>
         <div className="w-[230px] h-10 mt-3 relative space-x-10">
           <button

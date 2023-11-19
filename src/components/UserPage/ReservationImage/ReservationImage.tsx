@@ -65,7 +65,7 @@ export default function ReservationImage({img,res_id}:{img:string,res_id:string}
           onMouseLeave={() => setHovering(false)}
         >
           <svg
-            className="z-30 left-[138px] top-[75px] absolute"
+            className="z-5 left-[138px] top-[75px] absolute"
             width="20"
             height="20"
             viewBox="0 0 20 20"

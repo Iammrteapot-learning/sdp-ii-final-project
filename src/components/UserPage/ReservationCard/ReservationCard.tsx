@@ -3,13 +3,21 @@ import CancelReservationButton from './CancelReservationButton'
 import dayjs, { Dayjs } from 'dayjs'
 
 const getDayOfWeek = (date: string): string => {
-  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  const dayIndex = new Date(date).getDay();
-  return daysOfWeek[dayIndex];
-};
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+  const dayIndex = new Date(date).getDay()
+  return daysOfWeek[dayIndex]
+}
 
-export default function ReservationCard({onCancel,onEdit,reservation}:{onCancel:Function,onEdit:Function,reservation:Object}) {
-  const dayOfWeek = getDayOfWeek(reservation.date);
+export default function ReservationCard({
+  onCancel,
+  onEdit,
+  reservation,
+}: {
+  onCancel: Function
+  onEdit: Function
+  reservation: Object
+}) {
+  const dayOfWeek = getDayOfWeek(reservation.date)
   //for map color
   const dayColor: Record<string, string> = {
     SUN: 'bg-red-600',
@@ -19,11 +27,17 @@ export default function ReservationCard({onCancel,onEdit,reservation}:{onCancel:
     THU: 'bg-orange-400',
     FRI: 'bg-sky-400',
     SAT: 'bg-purple-400',
-  };
+  }
   return (
     <div className="w-fit flex flex-row relative bg-neutral-50 rounded-xl shadow items-center p-3 space-x-5 hover:border-2 hover:border-slate-200">
-      <ReservationImage img={reservation.restaurant.img} res_id={reservation.restaurant.res_id} />
+      <ReservationImage
+        img={reservation.restaurant.img}
+        res_id={reservation.restaurant.res_id}
+      />
       <div className="space-y-1 p-2 w-fit">
+        <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
+          Reservation Id : {reservation.reserve_id}
+        </div>
         <div className="flex flex-row justify-start items-center space-x-2">
           <svg
             width="24"
@@ -40,7 +54,12 @@ export default function ReservationCard({onCancel,onEdit,reservation}:{onCancel:
               stroke-linejoin="round"
             />
           </svg>
-          <div className={"w-fit px-2 relative rounded-[30px] text-white text-lg font-bold " + dayColor[dayOfWeek]}>
+          <div
+            className={
+              'w-fit px-2 relative rounded-[30px] text-white text-lg font-bold ' +
+              dayColor[dayOfWeek]
+            }
+          >
             {dayOfWeek}
           </div>
           <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
@@ -83,9 +102,13 @@ export default function ReservationCard({onCancel,onEdit,reservation}:{onCancel:
         </div>
       </div>
       <div className="h-[110px] flex flex-col justify-between items-end">
-        <button onClick={() => {onEdit()}}>
+        <button
+          onClick={() => {
+            onEdit()
+          }}
+        >
           <svg
-            className='hover:bg-sky-200 hover:rounded-full'
+            className="hover:bg-sky-200 hover:rounded-full"
             width="40"
             height="40"
             viewBox="0 0 40 40"
@@ -98,7 +121,11 @@ export default function ReservationCard({onCancel,onEdit,reservation}:{onCancel:
             />
           </svg>
         </button>
-        <CancelReservationButton onClickHandler={() => {onCancel()}}/>
+        <CancelReservationButton
+          onClickHandler={() => {
+            onCancel()
+          }}
+        />
       </div>
     </div>
   )
