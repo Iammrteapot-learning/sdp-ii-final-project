@@ -2,8 +2,7 @@
 import InputField from '@/components/Common/InputField/InputField'
 import { useState } from 'react'
 
-export default function SearchBar() {
-  const [searchWord, setSearchWord] = useState('')
+export default function SearchBar({onChange}:{onChange: (searchWord:string) => void}) {
   const [searchTyping, setSearchTyping] = useState('')
   return (
     <div className="w-[75%] flex flex-row space-x-5 justify-center items-center p-3">
@@ -16,7 +15,7 @@ export default function SearchBar() {
           onChange={(value) => setSearchTyping(value)}
         />
       </div>
-      <button onClick={() => setSearchWord(searchTyping)}>
+      <button onClick={() => onChange(searchTyping)}>
         <svg
           className="hover:bg-yellow-300 rounded-full mb-2 justify-self-center "
           width="50"
