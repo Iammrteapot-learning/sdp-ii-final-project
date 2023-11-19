@@ -23,7 +23,7 @@ export default function ModalOverlay({
         onClick={onClose}
       />
       <div
-        className={`z-[${zIndex + 10}]`}
+        className={`z-[${zIndex + 10}] relative`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
