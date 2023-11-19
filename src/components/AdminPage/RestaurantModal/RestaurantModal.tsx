@@ -115,40 +115,23 @@ export default function RestaurantModal({
     setIsTelephoneError,
   ])
 
-  const handleConfirmEdit = async (request: RestaurantInformation) => {
-    await RestaurantService.editRestaurantById(request, session.user.token)
+  const handleConfirmEdit = async (
+    restaurantId: string,
+    request: RestaurantInformation
+  ) => {
+    await RestaurantService.editRestaurantById(
+      restaurantId,
+      request,
+      session.user.token
+    )
   }
 
   return (
     <>
-      <SuccessModal
-        type={modalType === 'create' ? 'CREATE' : 'UPDATE'}
-        isVisible={isShowSuccessModal}
-        onClose={() => setIsShowSuccessModal(false)}
-      />
-      {modalType === 'edit' && (
-        <WarningModal
-          type={'UPDATE'}
-          isVisible={isShowWarningModal}
-          onClose_Dismiss={() => setIsShowWarningModal(false)}
-          onClose_Confirm={() =>
-            handleConfirmEdit({
-              name,
-              address,
-              foodtype: foodType,
-              province,
-              postalcode: postalCode,
-              tel: telephone,
-              picture: imageUrl,
-            })
-          }
-          id={restaurantId ?? ''}
-        />
-      )}
       <ModalOverlay isVisible={isVisible} onClose={onClose}>
         <div
-          className="w-[735px] px-16 pt-8 pb-8 bg-zinc-100 shadow rounded-[30px]
-        flex flex-col gap-3 items-center"
+          className="w-[735px] max-h-[450px] px-16 pt-8 pb-8 bg-zinc-100 shadow rounded-[30px]
+        flex flex-col gap-3 items-center z-50 overflow-auto no-scrollbar"
         >
           <ModalHeaderText
             label={
@@ -276,6 +259,36 @@ export default function RestaurantModal({
           </div>
         </div>
       </ModalOverlay>
+      <SuccessModal
+        type={modalType === 'create' ? 'CREATE' : 'UPDATE'}
+        isVisible={isShowSuccessModal}
+        onClose={() => {
+          setIsShowSuccessModal(false)
+          onClose()
+        }}
+        name={name}
+      />
+      {modalType === 'edit' && (
+        <WarningModal
+          type={'UPDATE'}
+          isVisible={isShowWarningModal}
+          onClose_Dismiss={() => setIsShowWarningModal(false)}
+          onClose_Confirm={async () => {
+            await handleConfirmEdit(restaurantId ?? '', {
+              name,
+              address,
+              foodtype: foodType,
+              province,
+              postalcode: postalCode,
+              tel: telephone,
+              picture: imageUrl,
+            })
+            setIsShowWarningModal(false)
+            setIsShowSuccessModal(true)
+          }}
+          id={restaurantId ?? ''}
+        />
+      )}
     </>
   )
 }

@@ -10,10 +10,6 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import RestaurantModal from '../RestaurantModal/RestaurantModal'
 import WarningModal from '@/components/Common/WarningModal/WarningModal'
-import {
-  RestaurantInformation,
-  RestaurantService,
-} from '@/services/RestaurantService'
 
 export default function RestaurantCard({
   name,
@@ -34,12 +30,9 @@ export default function RestaurantCard({
     router.push(`/admin/restaurants/${id}`)
   }
 
-  //TODO: Integrate this functions with modal
-  const handleEdit = () => {}
   const handleDelete = () => {}
 
   const [isShowEditModal, setIsShowEditModal] = useState(false)
-  const [isShowConfirmEditModal, setIsShowConfirmEditModal] = useState(false)
   const [isShowConfirmDeleteModal, setIsShowConfirmDeleteModal] =
     useState(false)
 
@@ -49,25 +42,6 @@ export default function RestaurantCard({
       py-4 px-6 flex justify-between 
     "
     >
-      <RestaurantModal
-        isVisible={isShowEditModal}
-        onClose={() => setIsShowEditModal(false)}
-        modalType={'edit'}
-      />
-      <WarningModal
-        type={'UPDATE'}
-        isVisible={isShowConfirmEditModal}
-        onClose_Dismiss={() => setIsShowConfirmEditModal(false)}
-        onClose_Confirm={() => handleEdit()}
-        id={id}
-      />
-      <WarningModal
-        type={'DELETE'}
-        isVisible={isShowConfirmDeleteModal}
-        onClose_Dismiss={() => setIsShowConfirmDeleteModal(false)}
-        onClose_Confirm={() => handleDelete()}
-        id={id}
-      />
       <div>
         <RestaurantImage img={'/images/italian.png'} res_id={''} />
       </div>
@@ -91,7 +65,10 @@ export default function RestaurantCard({
               ))}
             </div>
           </div>
-          <div className="cursor-pointer h-fit w-fit" onClick={handleEdit}>
+          <div
+            className="cursor-pointer h-fit w-fit"
+            onClick={() => setIsShowEditModal(true)}
+          >
             <EditIcon />
           </div>
         </div>
@@ -112,6 +89,19 @@ export default function RestaurantCard({
           <DeleteRestaurantButton onClick={handleDelete} />
         </div>
       </div>
+      <RestaurantModal
+        isVisible={isShowEditModal}
+        onClose={() => setIsShowEditModal(false)}
+        modalType={'edit'}
+        restaurantId={id}
+      />
+      <WarningModal
+        type={'DELETE'}
+        isVisible={isShowConfirmDeleteModal}
+        onClose_Dismiss={() => setIsShowConfirmDeleteModal(false)}
+        onClose_Confirm={() => {}}
+        id={id}
+      />
     </div>
   )
 }
