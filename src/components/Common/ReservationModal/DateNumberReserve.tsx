@@ -3,7 +3,7 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs, { Dayjs } from 'dayjs'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TextField from '@mui/material/TextField'
 import { DateValidationError } from '@mui/x-date-pickers/models'
 
@@ -13,13 +13,30 @@ export default function DateNumberReserve({
   onDateChange,
   onNumberChange,
   isError,
+  setupNumber,
+  setupDate,
+  isReset
 }: {
   onDateChange: Function
   onNumberChange: Function
   isError: boolean
+  setupNumber:number
+  setupDate: Dayjs | null
+  isReset:boolean
 }) {
   const [reserveDate, setReserveDate] = useState<Dayjs | null>(null)
   const [reserveNumber, setReserveNumber] = useState<number>(1)
+  useEffect(() => {
+    setReserveNumber(setupNumber)
+  },[setupNumber])
+  useEffect(() => {
+    setReserveDate(setupDate)
+  },[setupDate])
+  useEffect(() => {
+    setReserveNumber(setupNumber)
+    setReserveDate(setupDate)
+  },[isReset])
+
   return (
     <div className="w-[500px] h-[130px] relative ">
       <div className="w-[500px] h-40 left-0 absolute opacity-50 bg-zinc-200 rounded-[30px]" />
