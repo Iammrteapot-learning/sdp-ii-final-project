@@ -53,7 +53,7 @@ export default function UserReservationsPage() {
   }
   const myReserve = [reserve_1, reserve_2, reserve_1]
   return (
-    <div className="mt-32 flex flex-col items-center justify-center space-y-10">
+    <div className="mt-8 flex flex-col items-center justify-center space-y-10">
       <div className="relative flex flex-col items-center justify-center">
         <div
           className="text-red-500 text-[64px] font-bold font-['Helvetica Neue'] leading-[96px]"

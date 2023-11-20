@@ -39,7 +39,7 @@ export default function UserRestaurantsPage() {
   const [filterList,setFilterList] = useState<object[]>(res_list)
 
   return (
-    <div className="w-full flex flex-col justify-center items-center mt-32">
+    <div className="w-full flex flex-col justify-center items-center mt-8">
       <div
         className="flex text-red-500 text-[36px] sm:text-[48px] md:text-[60px] lg:text-[64px] font-bold font-['Helvetica Neue'] leading-[96px]"
         style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.25)' }}

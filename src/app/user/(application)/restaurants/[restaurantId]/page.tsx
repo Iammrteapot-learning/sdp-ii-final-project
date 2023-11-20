@@ -30,7 +30,7 @@ export default function UserRestaurantDetailPage({
   const [pickDate,setPickDate] = useState<Dayjs | null>(null)
   const [participants,setparticipants] = useState(0)
   return (
-    <div className='flex justify-center items-center mt-32'>
+    <div className='flex justify-center items-center mt-8'>
       <div className="w-fit flex flex-col p-3 justify-center justify-self-center">
         <div className="relative flex items-start">
           <BackButton />
