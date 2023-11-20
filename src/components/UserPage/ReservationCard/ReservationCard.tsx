@@ -17,7 +17,7 @@ export default function ReservationCard({
   onEdit: Function
   reservation: Object
 }) {
-  const dayOfWeek = getDayOfWeek(reservation.date)
+  const dayOfWeek = getDayOfWeek(reservation.bookingDate.substring(0, 10))
   //for map color
   const dayColor: Record<string, string> = {
     SUN: 'bg-red-600',
@@ -31,12 +31,12 @@ export default function ReservationCard({
   return (
     <div className="w-fit flex flex-row relative bg-neutral-50 rounded-xl shadow items-center p-3 space-x-5 hover:border-2 hover:border-slate-200">
       <ReservationImage
-        img={reservation.restaurant.img}
-        res_id={reservation.restaurant.res_id}
+        img={reservation.restaurant.picture}
+        res_id={reservation.restaurant.id}
       />
       <div className="space-y-1 p-2 w-fit">
         <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
-          Reservation Id : {reservation.reserve_id}
+          Reservation Id : {reservation._id}
         </div>
         <div className="flex flex-row justify-start items-center space-x-2">
           <svg
@@ -63,20 +63,20 @@ export default function ReservationCard({
             {dayOfWeek}
           </div>
           <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
-            {dayjs(reservation.date).format('MMM D, YYYY')}
+            {dayjs(reservation.bookingDate.substring(0, 10)).format('MMM D, YYYY')}
           </div>
         </div>
         <div className="w-fit flex items-center justify-center p-3 h-7 relative bg-red-500 rounded-[20px]">
           <div className="w-fit text-white text-xl font-bold font-['Helvetica Neue'] leading-[30px]">
-            {reservation.restaurant.res_name}
+            {reservation.restaurant.name}
           </div>
         </div>
         <div className="w-fit relative flex flex-row space-x-4">
           <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
-            Name : {reservation.name}
+            Name : {reservation.user.name}
           </div>
           <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
-            Tel : {reservation.tel}
+            Tel : {reservation.user.tel}
           </div>
         </div>
         <div className="w-fit relative flex flex-row space-x-2 justfy-center">
@@ -97,7 +97,7 @@ export default function ReservationCard({
           </svg>
 
           <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
-            Number of Guests: {reservation.participants}
+            Number of Guests: {reservation.numOfGuests}
           </div>
         </div>
       </div>
