@@ -10,23 +10,29 @@ import { Booking, BookingService } from '@/services/BookingService'
 
 export default function UserReservationsPage() {
   //add DELETE api on onClose_Confirm (warning delete modal)
-  const [reservations,setReservations] = useState<Booking[]>([])
+  const [reservations, setReservations] = useState<Booking[]>([])
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const [type, setType] = useState('UPDATE')
+  const [type, setType] = useState<'CREATE' | 'UPDATE' | 'DELETE'>('UPDATE')
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [focusReserve, setFocusReserve] = useState(0)
-  const [pickDate,setPickDate] = useState<Dayjs | null>(null)
-  const [participants,setparticipants] = useState(0)
+  const [pickDate, setPickDate] = useState<Dayjs>(dayjs())
+  const [participants, setParticipants] = useState(0)
   const { data: session } = useSession()
-  if(!session){return;}
+  if (!session) {
+    return
+  }
   useEffect(() => {
     const fetchReservations = async () => {
       const reserves = await BookingService.getAllBookings(session.user.token)
       setReservations(reserves)
     }
     fetchReservations()
-  }, [session,setReservations,BookingService.getAllBookings(session.user.token)])
+  }, [
+    session,
+    setReservations,
+    BookingService.getAllBookings(session.user.token),
+  ])
 
   const handleConfirmDelete = async (bookingId: string, token: string) => {
     try {
@@ -35,7 +41,7 @@ export default function UserReservationsPage() {
       console.log(error)
     }
   }
-  
+
   return (
     <div className="mt-8 flex flex-col items-center justify-center space-y-10">
       <div className="relative flex flex-col items-center justify-center">
@@ -46,12 +52,12 @@ export default function UserReservationsPage() {
           MY RESERVATION
         </div>
         <div className="text-zinc-600 text-3xl font-medium font-['Helvetica Neue'] leading-[45px]">
-          Total : {reservations?.length}{' '}
+          Total : {reservations.length}{' '}
           {reservations?.length > 1 ? 'Reservations' : 'Reservation'}
         </div>
       </div>
-      <div className="w-fit py-5 px-16 relative  bg-zinc-100 rounded-xl shadow items-center justyfy-center space-y-5">
-        {reservations?.map((res: Booking, index: number) => (
+      <div className="w-fit py-5 px-16 relative  bg-zinc-100 rounded-xl shadow items-center justify-center space-y-5">
+        {reservations.map((res: Booking, index: number) => (
           <ReservationCard
             onCancel={() => {
               setIsWarningModalOpen(true)
@@ -67,8 +73,8 @@ export default function UserReservationsPage() {
           />
         ))}
       </div>
-      {/* <ReservationModal
-        name={reservations?.restaurant.name}
+      <ReservationModal
+        name={reservations[focusReserve].restaurant.name}
         address={
           reservations[focusReserve].restaurant.address +
           ' ' +
@@ -78,20 +84,21 @@ export default function UserReservationsPage() {
         }
         tel={reservations[focusReserve].restaurant.tel}
         isVisible={isReservationModalOpen}
-        reserve_number={reservations[focusReserve].numOfGuests}
-        reserve_date={dayjs(reservations[focusReserve].date, 'YYYY-MM-DD')}
-        onCloseConfirm={() => {
+        onConfirm={() => {
           setIsReservationModalOpen(false)
           setIsWarningModalOpen(true)
         }}
-        onCloseCancel={() => setIsReservationModalOpen(false)}
-        onDateNumberChange={(date:Dayjs|null,number:number) => {setPickDate(date); setparticipants(number);}}
-      /> */}
+        onClose={() => setIsReservationModalOpen(false)}
+        onDateNumberChange={(date: Dayjs, number: number) => {
+          setPickDate(date)
+          setParticipants(number)
+        }}
+      />
       <WarningModal
-        type={type}
+        type={type === 'CREATE' ? 'UPDATE' : type}
         isVisible={isWarningModalOpen}
-        onClose_Dismiss={() => setIsWarningModalOpen(false)}
-        onClose_Confirm={async () => {
+        onClose={() => setIsWarningModalOpen(false)}
+        onConfirm={async () => {
           //if delete DELETE using myReserve[focusReserve].reserve_id
           //if update POST using update date pickDate and participants
           setIsWarningModalOpen(false)

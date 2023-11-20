@@ -46,9 +46,9 @@ export const BookingService = {
       if (responseJson.success) {
         return responseJson.data
       }
-      throw new Error('Create restaurant failed')
+      throw new Error('Get bookings failed')
     } else {
-      throw new Error('Create restaurant failed')
+      throw new Error('Get bookings failed')
     }
   },
   getBookingsByBookingId: async (
@@ -69,9 +69,9 @@ export const BookingService = {
       if (responseJson.success) {
         return responseJson.data
       }
-      throw new Error('Create restaurant failed')
+      throw new Error('Get bookings failed')
     } else {
-      throw new Error('Create restaurant failed')
+      throw new Error('Get bookings failed')
     }
   },
   editBookingByBookingId: async (
@@ -93,7 +93,7 @@ export const BookingService = {
       const responseJson = await response.json()
       return responseJson.success
     } else {
-      throw new Error('Create restaurant failed')
+      throw new Error('Edit booking failed')
     }
   },
   deleteBookingByBookingId: async (
@@ -113,7 +113,7 @@ export const BookingService = {
       const responseJson = await response.json()
       return responseJson.success
     } else {
-      throw new Error('Create restaurant failed')
+      throw new Error('Delete booking failed')
     }
   },
   createBooking: async (
@@ -135,7 +135,7 @@ export const BookingService = {
       const responseJson = await response.json()
       return responseJson.success
     } else {
-      throw new Error('Create restaurant failed')
+      throw new Error('Create booking failed')
     }
   },
 }

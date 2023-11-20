@@ -4,11 +4,12 @@ import ModalOverlay from '../ModalOverlay/ModalOverlay'
 export default function ErrorModal({
   isVisible,
   onClose,
+  message,
 }: {
   isVisible: boolean
   onClose: () => void
+  message: string
 }) {
-  const message = "You reservations have reach the limit !"
   return (
     <ModalOverlay isVisible={isVisible} onClose={onClose}>
       <div className="w-fit h-auto p-4 relative bg-zinc-100 rounded-[30px] shadow flex flex-col items-center">
