@@ -1,4 +1,4 @@
-export default function searchFilter({ res_list, searchWord }: { res_list: any[], searchWord: string }) {
+export default function searchFilter({ res_list, searchWord }: { res_list: Object[] | undefined, searchWord: string }) {
   // Check if res_list is defined and is an array
   if (!Array.isArray(res_list)) {
     console.error('res_list is not defined or not an array');
@@ -14,7 +14,7 @@ export default function searchFilter({ res_list, searchWord }: { res_list: any[]
   const result = res_list.filter((res) =>
     res.name.toLowerCase().includes(lowercasedSearchWord) ||
     res.province.toLowerCase().includes(lowercasedSearchWord) ||
-    res.foodType.toLowerCase().includes(lowercasedSearchWord)
+    res.foodtype.toLowerCase().includes(lowercasedSearchWord)
   );
 
   return result;
