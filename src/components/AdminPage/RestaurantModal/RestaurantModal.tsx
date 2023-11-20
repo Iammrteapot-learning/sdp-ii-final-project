@@ -4,17 +4,9 @@ import ModalHeaderText from './ModalHeaderText'
 import InputFieldWithOutLabel from '@/components/Common/InputFieldWithOutLabel/InputFieldWithOutLabel'
 import LocationIcon from '@/components/Common/Icon/LocationIcon'
 import ImageIcon from '@/components/Common/Icon/ImageIcon'
-import { useCallback, useState } from 'react'
-import {
-  RestaurantRequestBody,
-  RestaurantService,
-} from '@/services/RestaurantService'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import RestaurantSuccessModal from '@/components/Common/SuccessModal/RestaurantSuccessModal'
-import RestaurantWarningModal from '@/components/Common/WarningModal/RestaurantWarningModal'
+import { useCallback, useEffect, useState } from 'react'
 
-type ModalType = 'create' | 'edit'
+type ModalType = 'CREATE' | 'UPDATE'
 
 type InputType =
   | 'name'
@@ -48,8 +40,8 @@ const errorMessage: Record<InputType, string> = {
 export default function RestaurantModal({
   isVisible,
   onClose,
+  onConfirm,
   modalType,
-  restaurantId,
   defaultName = '',
   defaultFoodType = '',
   defaultAddress = '',
@@ -60,8 +52,24 @@ export default function RestaurantModal({
 }: {
   isVisible: boolean
   onClose: () => void
+  onConfirm: ({
+    name,
+    foodType,
+    address,
+    province,
+    postalCode,
+    telephone,
+    imageUrl,
+  }: {
+    name: string
+    foodType: string
+    address: string
+    province: string
+    postalCode: string
+    telephone: string
+    imageUrl: string
+  }) => void
   modalType: ModalType
-  restaurantId?: string
   defaultName?: string
   defaultFoodType?: string
   defaultAddress?: string
@@ -70,13 +78,49 @@ export default function RestaurantModal({
   defaultTelephone?: string
   defaultImageUrl?: string
 }) {
-  const [name, setName] = useState(defaultName)
-  const [foodType, setFoodType] = useState(defaultFoodType)
-  const [address, setAddress] = useState(defaultAddress)
-  const [province, setProvince] = useState(defaultProvince)
-  const [postalCode, setPostalCode] = useState(defaultPostalCode)
-  const [telephone, setTelephone] = useState(defaultTelephone)
-  const [imageUrl, setImageUrl] = useState(defaultImageUrl)
+  const [name, setName] = useState('')
+  const [foodType, setFoodType] = useState('')
+  const [address, setAddress] = useState('')
+  const [province, setProvince] = useState('')
+  const [postalCode, setPostalCode] = useState('')
+  const [telephone, setTelephone] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+
+  useEffect(() => {
+    if (modalType === 'UPDATE') {
+      setName(defaultName)
+      setFoodType(defaultFoodType)
+      setAddress(defaultAddress)
+      setProvince(defaultProvince)
+      setPostalCode(defaultPostalCode)
+      setTelephone(defaultTelephone)
+      setImageUrl(defaultImageUrl)
+    } else if (modalType === 'CREATE') {
+      setName('')
+      setFoodType('')
+      setAddress('')
+      setProvince('')
+      setPostalCode('')
+      setTelephone('')
+      setImageUrl('')
+    }
+  }, [
+    modalType,
+    defaultName,
+    defaultFoodType,
+    defaultAddress,
+    defaultProvince,
+    defaultPostalCode,
+    defaultTelephone,
+    defaultImageUrl,
+    setName,
+    setFoodType,
+    setAddress,
+    setProvince,
+    setPostalCode,
+    setTelephone,
+    setImageUrl,
+  ])
 
   const [isNameError, setIsNameError] = useState(false)
   const [isFoodTypeError, setIsFoodTypeError] = useState(false)
@@ -85,17 +129,6 @@ export default function RestaurantModal({
   const [isPostalCodeError, setIsPostalCodeError] = useState(false)
   const [isTelephoneError, setIsTelephoneError] = useState(false)
   const [isImageUrlError, setIsImageUrlError] = useState(false)
-
-  const [isShowWarningModal, setIsShowWarningModal] = useState(false)
-  const [isShowSuccessModal, setIsShowSuccessModal] = useState(false)
-
-  const router = useRouter()
-  const { data: session } = useSession()
-  if (!session) {
-    alert('Please login to access this page')
-    router.push('/admin/auth')
-    return
-  }
 
   const validateInput = useCallback(() => {
     const isNameValid = name !== '' && name.length <= 50
@@ -140,29 +173,6 @@ export default function RestaurantModal({
     setIsImageUrlError,
   ])
 
-  const handleConfirmEdit = async (
-    restaurantId: string,
-    request: RestaurantRequestBody,
-    token: string
-  ) => {
-    try {
-      await RestaurantService.editRestaurantById(restaurantId, request, token)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const handleConfirmCreate = async (
-    requestBody: RestaurantRequestBody,
-    token: string
-  ) => {
-    try {
-      await RestaurantService.createRestaurant(requestBody, token)
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
     <>
       <ModalOverlay isVisible={isVisible} onClose={onClose}>
@@ -172,7 +182,7 @@ export default function RestaurantModal({
         >
           <ModalHeaderText
             label={
-              modalType === 'create' ? 'Create Restaurant' : 'Edit Restaurant'
+              modalType === 'CREATE' ? 'Create Restaurant' : 'Edit Restaurant'
             }
           />
           <div className="w-full flex items-center">
@@ -287,25 +297,17 @@ export default function RestaurantModal({
             <button
               className="px-4 py-2 bg-sky-400 rounded justify-start items-center 
           gap-2 inline-flex text-white text-base font-medium hover:bg-blue-500"
-              onClick={async () => {
+              onClick={() => {
                 if (validateInput()) {
-                  if (modalType === 'edit') {
-                    setIsShowWarningModal(true)
-                  } else if (modalType === 'create') {
-                    await handleConfirmCreate(
-                      {
-                        name,
-                        address,
-                        foodtype: foodType,
-                        province,
-                        postalcode: postalCode,
-                        tel: telephone,
-                        picture: imageUrl,
-                      },
-                      session.user.token
-                    )
-                    setIsShowSuccessModal(true)
-                  }
+                  onConfirm({
+                    name,
+                    foodType,
+                    address,
+                    province,
+                    postalCode,
+                    telephone,
+                    imageUrl,
+                  })
                 }
               }}
             >
@@ -321,41 +323,6 @@ export default function RestaurantModal({
           </div>
         </div>
       </ModalOverlay>
-      <RestaurantSuccessModal
-        type={modalType === 'create' ? 'CREATE' : 'UPDATE'}
-        isVisible={isShowSuccessModal}
-        onClose={() => {
-          setIsShowSuccessModal(false)
-          onClose()
-          window.location.reload()
-        }}
-        restaurantName={name}
-      />
-      {modalType === 'edit' && (
-        <RestaurantWarningModal
-          type={'UPDATE'}
-          isVisible={isShowWarningModal}
-          onDismiss={() => setIsShowWarningModal(false)}
-          onConfirm={async () => {
-            await handleConfirmEdit(
-              restaurantId ?? '',
-              {
-                name,
-                address,
-                foodtype: foodType,
-                province,
-                postalcode: postalCode,
-                tel: telephone,
-                picture: imageUrl,
-              },
-              session.user.token
-            )
-            setIsShowWarningModal(false)
-            setIsShowSuccessModal(true)
-          }}
-          restaurantName={name}
-        />
-      )}
     </>
   )
 }

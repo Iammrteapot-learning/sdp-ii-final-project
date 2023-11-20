@@ -5,20 +5,91 @@ import AddIcon from '@/components/Common/Icon/AddIcon'
 import SearchIcon from '@/components/Common/Icon/SearchIcon'
 import InputFieldWithOutLabel from '@/components/Common/InputFieldWithOutLabel/InputFieldWithOutLabel'
 import PageTopicText from '@/components/Common/PageTopicText/PageTopicText'
+import RestaurantSuccessModal, {
+  SuccessModalType,
+} from '@/components/Common/SuccessModal/RestaurantSuccessModal'
+import RestaurantWarningModal, {
+  WarningModalType,
+} from '@/components/Common/WarningModal/RestaurantWarningModal'
 import {
   RestaurantInformation,
+  RestaurantRequestBody,
   RestaurantService,
 } from '@/services/RestaurantService'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 type RestaurantWithFlag = RestaurantInformation & { isShow: boolean }
+
+const restaurantFocusDefault: RestaurantInformation = {
+  name: '',
+  address: '',
+  foodtype: '',
+  province: '',
+  postalcode: '',
+  tel: '',
+  picture: '',
+}
 
 export default function AdminRestaurantsPage() {
   const [searchInput, setSearchInput] = useState('')
   const [restaurantList, setRestaurantList] = useState<RestaurantWithFlag[]>([])
   const [triggerSearch, setTriggerSearch] = useState(false)
 
-  const [isShowCreateModal, setIsShowCreateModal] = useState(false)
+  const [restaurantFocus, setRestaurantFocus] = useState<RestaurantInformation>(
+    restaurantFocusDefault
+  )
+  const [isShowRestaurantModal, setIsShowRestaurantModal] = useState(false)
+  const [isShowWarningModal, setIsShowWarningModal] = useState(false)
+  const [isShowSuccessModal, setIsShowSuccessModal] = useState(false)
+
+  const [successType, setSuccessType] = useState<SuccessModalType>('CREATE')
+  const [warningType, setWarningType] = useState<WarningModalType>('DELETE')
+  const [restaurantModalType, setRestaurantModalType] = useState<
+    'CREATE' | 'UPDATE'
+  >('CREATE')
+
+  const [editFunction, setEditFunction] = useState<() => void>(() => () => {})
+
+  const router = useRouter()
+  const { data: session } = useSession()
+  if (!session || session.user.role !== 'admin') {
+    alert('Please login to access this page')
+    router.push('/admin/auth')
+    return
+  }
+
+  const handleConfirmCreate = async (
+    requestBody: RestaurantRequestBody,
+    token: string
+  ) => {
+    try {
+      await RestaurantService.createRestaurant(requestBody, token)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleConfirmEdit = async (
+    restaurantId: string,
+    request: RestaurantRequestBody,
+    token: string
+  ) => {
+    try {
+      await RestaurantService.editRestaurantById(restaurantId, request, token)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleConfirmDelete = async (restaurantId: string, token: string) => {
+    try {
+      await RestaurantService.deleteRestaurantById(restaurantId, token)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     const fetchRestaurantList = async () => {
@@ -80,7 +151,10 @@ export default function AdminRestaurantsPage() {
           </div>
           <div
             className="cursor-pointer"
-            onClick={() => setIsShowCreateModal(true)}
+            onClick={() => {
+              setRestaurantModalType('CREATE')
+              setIsShowRestaurantModal(true)
+            }}
           >
             <AddIcon />
           </div>
@@ -102,6 +176,17 @@ export default function AdminRestaurantsPage() {
                   postalCode={restaurant.postalcode}
                   tel={restaurant.tel}
                   picture={restaurant.picture}
+                  onFocus={() =>
+                    setRestaurantFocus(restaurant as RestaurantInformation)
+                  }
+                  handleEdit={() => {
+                    setRestaurantModalType('UPDATE')
+                    setIsShowRestaurantModal(true)
+                  }}
+                  handleDelete={() => {
+                    setWarningType('DELETE')
+                    setIsShowWarningModal(true)
+                  }}
                 />
               )
             )
@@ -109,9 +194,110 @@ export default function AdminRestaurantsPage() {
         </div>
       </div>
       <RestaurantModal
-        isVisible={isShowCreateModal}
-        onClose={() => setIsShowCreateModal(false)}
-        modalType={'create'}
+        isVisible={isShowRestaurantModal}
+        modalType={restaurantModalType}
+        defaultName={restaurantFocus.name}
+        defaultFoodType={restaurantFocus.foodtype}
+        defaultAddress={restaurantFocus.address}
+        defaultProvince={restaurantFocus.province}
+        defaultPostalCode={restaurantFocus.postalcode}
+        defaultTelephone={restaurantFocus.tel}
+        defaultImageUrl={restaurantFocus.picture}
+        onClose={() => setIsShowRestaurantModal(false)}
+        onConfirm={async function ({
+          name,
+          foodType,
+          address,
+          province,
+          postalCode,
+          telephone,
+          imageUrl,
+        }: {
+          name: string
+          foodType: string
+          address: string
+          province: string
+          postalCode: string
+          telephone: string
+          imageUrl: string
+        }) {
+          if (restaurantModalType === 'UPDATE') {
+            setEditFunction(() => async () => {
+              await handleConfirmEdit(
+                restaurantFocus.id ?? '',
+                {
+                  name,
+                  address,
+                  foodtype: foodType,
+                  province,
+                  postalcode: postalCode,
+                  tel: telephone,
+                  picture: imageUrl,
+                },
+                session.user.token
+              )
+              console.log('awaited')
+            })
+            setWarningType('UPDATE')
+            setIsShowWarningModal(true)
+          } else if (restaurantModalType === 'CREATE') {
+            await handleConfirmCreate(
+              {
+                name,
+                address,
+                foodtype: foodType,
+                province,
+                postalcode: postalCode,
+                tel: telephone,
+                picture: imageUrl,
+              },
+              session.user.token
+            )
+            setSuccessType('CREATE')
+            setRestaurantFocus({
+              name,
+              address,
+              foodtype: foodType,
+              province,
+              postalcode: postalCode,
+              tel: telephone,
+              picture: imageUrl,
+            })
+            setIsShowSuccessModal(true)
+            setIsShowRestaurantModal(false)
+          }
+        }}
+      />
+      <RestaurantWarningModal
+        type={warningType}
+        isVisible={isShowWarningModal}
+        onDismiss={() => setIsShowWarningModal(false)}
+        onConfirm={async () => {
+          if (warningType === 'UPDATE') {
+            await editFunction()
+            setIsShowWarningModal(false)
+            setSuccessType('UPDATE')
+            setIsShowSuccessModal(true)
+          } else if (warningType === 'DELETE') {
+            await handleConfirmDelete(
+              restaurantFocus.id ?? '',
+              session.user.token
+            )
+            setIsShowWarningModal(false)
+            setSuccessType('DELETE')
+            setIsShowSuccessModal(true)
+          }
+        }}
+        restaurantName={restaurantFocus.name}
+      />
+      <RestaurantSuccessModal
+        type={successType}
+        isVisible={isShowSuccessModal}
+        onClose={() => {
+          setIsShowSuccessModal(false)
+          window.location.reload()
+        }}
+        restaurantName={restaurantFocus.name}
       />
     </main>
   )
