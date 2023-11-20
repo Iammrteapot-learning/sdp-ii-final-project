@@ -2,7 +2,7 @@
 import ModalOverlay from '@/components/Common/ModalOverlay/ModalOverlay'
 import SuccessIcon from '../Icon/SuccessIcon'
 
-type SuccessModalType = 'CREATE' | 'DELETE' | 'UPDATE'
+export type SuccessModalType = 'CREATE' | 'DELETE' | 'UPDATE'
 
 const SuccessModalMessage: Record<SuccessModalType, string> = {
   CREATE: 'has successfully been created',
