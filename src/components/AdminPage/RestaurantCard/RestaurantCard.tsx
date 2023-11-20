@@ -14,23 +14,38 @@ import WarningModal from '@/components/Common/WarningModal/WarningModal'
 export default function RestaurantCard({
   name,
   id,
-  tags,
-  location,
+  foodType,
+  address,
+  province,
+  postalCode,
   tel,
+  picture,
 }: {
   name: string
   id: string
-  tags: string[]
-  location: string
+  foodType: string
+  address: string
+  province: string
+  postalCode: string
   tel: string
+  picture: string
 }) {
+  const location = `${address}, ${province}, ${postalCode}`
+
   const router = useRouter()
+
+  const tags = foodType.split(',').filter((tag) => tag.trim())
 
   const handleViewAllReservation = () => {
     router.push(`/admin/restaurants/${id}`)
   }
-
   const handleDelete = () => {}
+
+  const urlRegex = /(http[s]?:\/\/)?([^\s(["<,>]*\.[^\s[",><]*)/gi
+  const imageUrl = urlRegex.test(picture)
+    ? picture
+    : '/images/res_reserve_img.png'
+  console.log(imageUrl)
 
   const [isShowEditModal, setIsShowEditModal] = useState(false)
   const [isShowConfirmDeleteModal, setIsShowConfirmDeleteModal] =
@@ -43,7 +58,7 @@ export default function RestaurantCard({
     "
     >
       <div>
-        <RestaurantImage img={'/images/italian.png'} res_id={''} />
+        <RestaurantImage img={imageUrl} res_id={id} />
       </div>
       <div className="flex flex-col gap-1 w-[75%]">
         <div className="flex flex-row justify-between">
@@ -94,6 +109,13 @@ export default function RestaurantCard({
         onClose={() => setIsShowEditModal(false)}
         modalType={'edit'}
         restaurantId={id}
+        defaultName={name}
+        defaultFoodType={foodType}
+        defaultAddress={address}
+        defaultProvince={province}
+        defaultPostalCode={postalCode}
+        defaultTelephone={tel}
+        defaultImageUrl={picture}
       />
       <WarningModal
         type={'DELETE'}
