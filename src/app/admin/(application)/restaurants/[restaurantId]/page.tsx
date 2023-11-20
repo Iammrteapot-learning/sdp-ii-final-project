@@ -123,6 +123,15 @@ export default function AuthRestaurantDetailPage({
     return false
   }
 
+  const handleConfirmDelete = async (bookingId: string, token: string) => {
+    try {
+      return await BookingService.deleteBookingByBookingId(bookingId, token)
+    } catch (error) {
+      console.log(error)
+    }
+    return false
+  }
+
   useEffect(() => {
     const fetchRestaurantInfo = async () => {
       try {
@@ -275,6 +284,10 @@ export default function AuthRestaurantDetailPage({
           }
         }}
         onClose={() => setIsReservationModalOpen(false)}
+        onDateNumberChange={(date, number) => {
+          setPickDate(date)
+          setParticipants(number)
+        }}
       />
       <WarningModal
         type={warningType}
@@ -284,7 +297,8 @@ export default function AuthRestaurantDetailPage({
           if (warningType == 'UPDATE') {
             await editFunction()
           } else if (warningType == 'DELETE') {
-            //to be implement in delete
+            await handleConfirmDelete(focusReservation._id, session.user.token)
+            setIsSuccessModalOpen(true)
           }
         }}
         id={focusReservation._id}
@@ -292,7 +306,7 @@ export default function AuthRestaurantDetailPage({
       <SuccessModal
         type={successType}
         name={restaurantInfo.name}
-        date={dayjs(pickDate).format('YYYY/MM/DD')}
+        date={dayjs(pickDate).format('MMM DD , YYYY')}
         number={participants}
         isVisible={isSuccessModalOpen}
         onClose={() => {

@@ -42,7 +42,7 @@ export default function ReservationModal(props: ReservationModalProps) {
     <ModalOverlay isVisible={isVisible} onClose={onClose}>
       <div
         className="w-[680px] max-h-[450px] overflow-auto no-scrollbar bg-zinc-100 rounded-[30px] shadow 
-      flex-col justify-start items-center flex py-6"
+      flex-col justify-start items-center flex pt-6 pb-8"
       >
         <div className="flex-col justify-center items-center text-center">
           <div className="px-3 w-fit bg-red-500 rounded-[20px] shadow-inner">
