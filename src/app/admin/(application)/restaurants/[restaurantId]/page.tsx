@@ -75,6 +75,8 @@ export default function AuthRestaurantDetailPage({
     useState<RestaurantInformation>(defaultRestaurant)
   const [reservationList, setReservationList] = useState<Booking[]>([])
   const [results, setResults] = useState<Record<string, Booking[]>>({})
+  const [focusReservation, setFocusReservation] =
+    useState<Booking>(defaultReservation)
 
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
@@ -82,9 +84,10 @@ export default function AuthRestaurantDetailPage({
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
   const [pickDate, setPickDate] = useState<Dayjs | null>(null)
   const [participants, setParticipants] = useState(0)
-  const [focusReserve, setFocusReserve] = useState<Booking>(defaultReservation)
   const [successType, setSuccessType] = useState<SuccessModalType>('CREATE')
   const [warningType, setWarningType] = useState<WarningModalType>('DELETE')
+
+  const [editFunction, setEditFunction] = useState<() => void>(() => () => {})
 
   const handleConfirmCreate = async (
     requestBody: BookingRequestBody,
@@ -95,6 +98,23 @@ export default function AuthRestaurantDetailPage({
       return await BookingService.createBooking(
         requestBody,
         restaurantId,
+        token
+      )
+    } catch (error) {
+      console.log(error)
+    }
+    return false
+  }
+
+  const handleConfirmEdit = async (
+    bookingId: string,
+    requestBody: BookingRequestBody,
+    token: string
+  ): Promise<boolean> => {
+    try {
+      return await BookingService.editBookingByBookingId(
+        bookingId,
+        requestBody,
         token
       )
     } catch (error) {
@@ -203,7 +223,7 @@ export default function AuthRestaurantDetailPage({
                 setIsReservationModalOpen(true)
               }}
               onFocus={(reserve: Booking) => {
-                setFocusReserve(reserve)
+                setFocusReservation(reserve)
               }}
             />
           ))}
@@ -226,6 +246,19 @@ export default function AuthRestaurantDetailPage({
           createdAt,
         }: BookingRequestBody) {
           if (successType == 'UPDATE') {
+            setEditFunction(() => async () => {
+              if (
+                await handleConfirmEdit(
+                  focusReservation._id,
+                  { bookingDate, numOfGuests, createdAt },
+                  session.user.token
+                )
+              ) {
+                setIsSuccessModalOpen(true)
+              } else {
+                setIsErrorModalOpen(true)
+              }
+            })
             setIsWarningModalOpen(true)
           } else if (successType == 'CREATE') {
             if (
@@ -247,11 +280,14 @@ export default function AuthRestaurantDetailPage({
         type={warningType}
         isVisible={isWarningModalOpen}
         onClose={() => setIsWarningModalOpen(false)}
-        onConfirm={() => {
-          setIsWarningModalOpen(false)
-          setIsSuccessModalOpen(true)
+        onConfirm={async () => {
+          if (warningType == 'UPDATE') {
+            await editFunction()
+          } else if (warningType == 'DELETE') {
+            //to be implement in delete
+          }
         }}
-        id={focusReserve._id}
+        id={focusReservation._id}
       />
       <SuccessModal
         type={successType}
@@ -262,6 +298,7 @@ export default function AuthRestaurantDetailPage({
         onClose={() => {
           setIsSuccessModalOpen(false)
           setIsReservationModalOpen(false)
+          setIsWarningModalOpen(false)
           window.location.reload()
         }}
       />
