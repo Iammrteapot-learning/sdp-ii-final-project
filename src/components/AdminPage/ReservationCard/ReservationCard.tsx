@@ -1,6 +1,9 @@
+'use client'
 import CalendarIcon from '@/components/Common/Icon/CalendarIcon'
 import PencilIcon from '@/components/Common/Icon/PencilIcon'
-import dayjs, { Dayjs } from 'dayjs'
+import { Booking } from '@/services/BookingService'
+import dayjs from 'dayjs'
+
 export default function ReservationCard({
   date,
   res_list,
@@ -9,7 +12,7 @@ export default function ReservationCard({
   onFocus,
 }: {
   date: string
-  res_list: any[]
+  res_list: Booking[]
   onDelete: () => void
   onEdit: () => void
   onFocus: Function
@@ -52,18 +55,19 @@ export default function ReservationCard({
     )
   }
 
-  const eachRow = (res: object) => {
+  const eachRow = (res: Booking) => {
     return (
       <tr>
-        <td>{res.name}</td>
-        <td className="text-center">{res.tel}</td>
-        <td className="text-center">{res.participants}</td>
+        <td>{res.user.name}</td>
+        <td className="text-center">{res.user.tel}</td>
+        <td className="text-center">{res.numOfGuests}</td>
         <td className="text-center">{res.createdAt}</td>
         <td>
           <div className="flex flex-row space-x-8 justify-center items-center">
             <div className="px-4 bg-red-500 rounded-full justify-start items-center inline-flex hover:bg-red-600">
               <div
-                className="text-center text-white text-xs font-bold font-['Helvetica Neue'] leading-[18px]"
+                className="text-center text-white text-xs font-bold font-['Helvetica Neue'] leading-[18px]
+                cursor-pointer"
                 onClick={() => {
                   onFocus(res)
                   onDelete()
@@ -105,7 +109,7 @@ export default function ReservationCard({
       <div className="w-fit bg-zinc-100 rounded-xl p-3">
         <table className="table-auto border-separate border-spacing-x-10">
           {headerLine()}
-          <tbody>{res_list.map((res: object) => eachRow(res))}</tbody>
+          <tbody>{res_list.map((res: Booking) => eachRow(res))}</tbody>
         </table>
       </div>
     </div>
