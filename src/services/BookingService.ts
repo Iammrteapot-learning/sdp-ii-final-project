@@ -26,8 +26,13 @@ export type BookingRequestBody = {
 }
 
 export const BookingService = {
-  getAllBookings: async (token: string): Promise<Booking[]> => {
-    const url = `${serviceConfig.backendBaseUrl}/api/v1/bookings`
+  getAllBookings: async (
+    token: string,
+    restaurantId?: string
+  ): Promise<Booking[]> => {
+    const url = `${serviceConfig.backendBaseUrl}/api/v1/bookings${
+      restaurantId ? `?restaurantId=${restaurantId}` : ''
+    }`
     const response = await fetch(url, {
       method: 'GET',
       headers: {
