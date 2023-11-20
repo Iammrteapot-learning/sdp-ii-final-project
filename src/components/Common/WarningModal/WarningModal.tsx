@@ -18,7 +18,7 @@ export default function WarningModal({
   isVisible: boolean
   onClose_Dismiss: () => void
   onClose_Confirm: () => void
-  id:string
+  id: string
 }) {
   const message = WarningModalMessage[type]
   return (
@@ -40,17 +40,19 @@ export default function WarningModal({
         </svg>
 
         <div className=" relative text-center text-red-500 text-2xl font-bold font-['Helvetica Neue'] leading-9">
-          {message} <br/> Reservation ID : {id}
+          {message} <br /> Reservation ID : {id}
         </div>
         <div className="w-[230px] h-10 mt-3 relative space-x-10">
           <button
-            className="px-4 py-2 bg-sky-400 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium"
+            className="px-4 py-2 bg-sky-400 rounded justify-start items-center gap-2 inline-flex 
+            text-white text-base font-medium hover:bg-sky-500"
             onClick={onClose_Confirm}
           >
             Confirm
           </button>
           <button
-            className="px-4 py-2 bg-red-500 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium"
+            className="px-4 py-2 bg-red-500 rounded justify-start items-center gap-2 inline-flex
+             text-white text-base font-medium hover:bg-red-600"
             onClick={onClose_Dismiss}
           >
             Dismiss
