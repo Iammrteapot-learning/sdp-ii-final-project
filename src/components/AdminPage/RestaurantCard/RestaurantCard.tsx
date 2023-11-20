@@ -20,6 +20,9 @@ export default function RestaurantCard({
   postalCode,
   tel,
   picture,
+  onFocus,
+  handleEdit,
+  handleDelete,
 }: {
   name: string
   id: string
@@ -29,6 +32,9 @@ export default function RestaurantCard({
   postalCode: string
   tel: string
   picture: string
+  onFocus: () => void
+  handleEdit: () => void
+  handleDelete: () => void
 }) {
   const location = `${address}, ${province}, ${postalCode}`
 
@@ -39,17 +45,11 @@ export default function RestaurantCard({
   const handleViewAllReservation = () => {
     router.push(`/admin/restaurants/${id}`)
   }
-  const handleDelete = () => {}
 
   const urlRegex = /(http[s]?:\/\/)?([^\s(["<,>]*\.[^\s[",><]*)/gi
   const imageUrl = urlRegex.test(picture)
     ? picture
     : '/images/res_reserve_img.png'
-  console.log(imageUrl)
-
-  const [isShowEditModal, setIsShowEditModal] = useState(false)
-  const [isShowConfirmDeleteModal, setIsShowConfirmDeleteModal] =
-    useState(false)
 
   return (
     <div
@@ -65,7 +65,7 @@ export default function RestaurantCard({
           <div className="flex flex-col gap-2">
             <div className="flex gap-2 items-center">
               <div
-                className="w-fit flex items-center justify-center px-3 relative bg-red-500 rounded-[20px]
+                className="w-fit flex items-center justify-center px-3 bg-red-500 rounded-[20px]
             text-white text-xl font-bold font-['Helvetica Neue'] leading-[30px]"
               >
                 {name}
@@ -82,7 +82,10 @@ export default function RestaurantCard({
           </div>
           <div
             className="cursor-pointer h-fit w-fit"
-            onClick={() => setIsShowEditModal(true)}
+            onClick={() => {
+              onFocus()
+              handleEdit()
+            }}
           >
             <EditIcon />
           </div>
@@ -101,29 +104,14 @@ export default function RestaurantCard({
         </div>
         <div className="flex justify-between">
           <ViewAllReservationButton onClick={handleViewAllReservation} />
-          <DeleteRestaurantButton onClick={handleDelete} />
+          <DeleteRestaurantButton
+            onClick={() => {
+              onFocus()
+              handleDelete()
+            }}
+          />
         </div>
       </div>
-      <RestaurantModal
-        isVisible={isShowEditModal}
-        onClose={() => setIsShowEditModal(false)}
-        modalType={'edit'}
-        restaurantId={id}
-        defaultName={name}
-        defaultFoodType={foodType}
-        defaultAddress={address}
-        defaultProvince={province}
-        defaultPostalCode={postalCode}
-        defaultTelephone={tel}
-        defaultImageUrl={picture}
-      />
-      <WarningModal
-        type={'DELETE'}
-        isVisible={isShowConfirmDeleteModal}
-        onClose_Dismiss={() => setIsShowConfirmDeleteModal(false)}
-        onClose_Confirm={() => {}}
-        id={id}
-      />
     </div>
   )
 }

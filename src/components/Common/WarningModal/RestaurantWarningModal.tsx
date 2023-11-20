@@ -1,7 +1,7 @@
 'use client'
 import ModalOverlay from '../ModalOverlay/ModalOverlay'
 
-type WarningModalType = 'DELETE' | 'UPDATE'
+export type WarningModalType = 'DELETE' | 'UPDATE'
 const WarningModalMessage: Record<WarningModalType, string> = {
   DELETE: 'Do you want to delete RESTAURANT_NAME restaurant ?',
   UPDATE: "Do you want to change the restaurant's details ?",
