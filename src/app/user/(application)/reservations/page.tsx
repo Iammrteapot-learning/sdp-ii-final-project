@@ -10,7 +10,7 @@ import { Booking, BookingService } from '@/services/BookingService'
 
 export default function UserReservationsPage() {
   //add DELETE api on onClose_Confirm (warning delete modal)
-  const [reservations,setReservations] = useState<Booking>()
+  const [reservations,setReservations] = useState<Booking[]>([])
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [type, setType] = useState('UPDATE')
@@ -18,53 +18,24 @@ export default function UserReservationsPage() {
   const [focusReserve, setFocusReserve] = useState(0)
   const [pickDate,setPickDate] = useState<Dayjs | null>(null)
   const [participants,setparticipants] = useState(0)
-
-  const reserve_1 = {
-    reserve_id: '001',
-    restaurant: {
-      img: '/images/italian.png',
-      res_id: '001',
-      res_name: 'Enoteca Italian restaurant',
-      foodType: 'Italian',
-      province: 'Bangkok',
-      address:
-        'Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon',
-      postalcode: '10101',
-      res_tel: '081-234-5678',
-    },
-    name: 'Kim Tae Rae',
-    tel: '081-234-5678',
-    date: '2023-11-23',
-    participants: 2,
-  }
-  const reserve_2 = {
-    reserve_id: '002',
-    restaurant: {
-      img: '/images/italian.png',
-      res_id: '001',
-      res_name: 'Mae som sri Restaurant',
-      foodType: 'Thai',
-      province: 'Bangkok',
-      address:
-        'Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon',
-      postalcode: '10101',
-      res_tel: '081-234-5678',
-    },
-    name: 'Kim Tae Rae',
-    tel: '081-234-5678',
-    date: '2023-11-25',
-    participants: 5,
-  }
-  const myReserve = [reserve_1, reserve_2, reserve_1]
   const { data: session } = useSession()
+  if(!session){return;}
   useEffect(() => {
     const fetchReservations = async () => {
-      const reserves = await BookingService.getAllBookings(session?.user.token)
+      const reserves = await BookingService.getAllBookings(session.user.token)
       setReservations(reserves)
     }
     fetchReservations()
-  }, [setReservations, BookingService.getAllBookings(session?.user.token)])
-  console.log(reservations)
+  }, [session,setReservations,BookingService.getAllBookings(session.user.token)])
+
+  const handleConfirmDelete = async (bookingId: string, token: string) => {
+    try {
+      await BookingService.deleteBookingByBookingId(bookingId, token)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
   return (
     <div className="mt-8 flex flex-col items-center justify-center space-y-10">
       <div className="relative flex flex-col items-center justify-center">
@@ -80,7 +51,7 @@ export default function UserReservationsPage() {
         </div>
       </div>
       <div className="w-fit py-5 px-16 relative  bg-zinc-100 rounded-xl shadow items-center justyfy-center space-y-5">
-        {reservations?.map((res: Object, index: number) => (
+        {reservations?.map((res: Booking, index: number) => (
           <ReservationCard
             onCancel={() => {
               setIsWarningModalOpen(true)
@@ -96,37 +67,41 @@ export default function UserReservationsPage() {
           />
         ))}
       </div>
-      <ReservationModal
-        name={myReserve[focusReserve].restaurant.res_name}
+      {/* <ReservationModal
+        name={reservations?.restaurant.name}
         address={
-          myReserve[focusReserve].restaurant.address +
+          reservations[focusReserve].restaurant.address +
           ' ' +
-          myReserve[focusReserve].restaurant.province +
+          reservations[focusReserve].restaurant.province +
           ' ' +
-          myReserve[focusReserve].restaurant.postalcode
+          reservations[focusReserve].restaurant.postalcode
         }
-        tel={myReserve[focusReserve].restaurant.res_tel}
+        tel={reservations[focusReserve].restaurant.tel}
         isVisible={isReservationModalOpen}
-        reserve_number={myReserve[focusReserve].participants}
-        reserve_date={dayjs(myReserve[focusReserve].date, 'YYYY-MM-DD')}
-        onClose_Confirm={() => {
+        reserve_number={reservations[focusReserve].numOfGuests}
+        reserve_date={dayjs(reservations[focusReserve].date, 'YYYY-MM-DD')}
+        onCloseConfirm={() => {
           setIsReservationModalOpen(false)
           setIsWarningModalOpen(true)
         }}
-        onClose_Cancel={() => setIsReservationModalOpen(false)}
+        onCloseCancel={() => setIsReservationModalOpen(false)}
         onDateNumberChange={(date:Dayjs|null,number:number) => {setPickDate(date); setparticipants(number);}}
-      />
+      /> */}
       <WarningModal
         type={type}
         isVisible={isWarningModalOpen}
         onClose_Dismiss={() => setIsWarningModalOpen(false)}
-        onClose_Confirm={() => {
+        onClose_Confirm={async () => {
           //if delete DELETE using myReserve[focusReserve].reserve_id
           //if update POST using update date pickDate and participants
           setIsWarningModalOpen(false)
+          await handleConfirmDelete(
+            reservations[focusReserve]._id ?? '',
+            session.user.token
+          )
           setIsSuccessModalOpen(true)
         }}
-        id={myReserve[focusReserve].reserve_id}
+        id={reservations[focusReserve]?._id}
       />
       <SuccessModal
         type={type}
