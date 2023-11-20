@@ -19,7 +19,7 @@ export type Booking = {
   __v: number
 }
 
-type BookingRequestBody = {
+export type BookingRequestBody = {
   bookingDate: string
   numOfGuests: number
   createdAt: string
