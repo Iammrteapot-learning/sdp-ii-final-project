@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 export default function ReservationImage({img,res_id}:{img:string,res_id:string}) {
+  const isImageUrl = (url: string): boolean =>
+    /\.(jpeg|jpg|gif|png|bmp)$/i.test(url)
+  if(!isImageUrl(img)){img = ""}
   const [hovering, setHovering] = useState(false)
   const ViewDetailLabel = () => {
     return (

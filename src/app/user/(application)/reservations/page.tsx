@@ -2,12 +2,15 @@
 import WarningModal from '@/components/Common/WarningModal/WarningModal'
 import ReservationCard from '@/components/UserPage/ReservationCard/ReservationCard'
 import SuccessModal from '@/components/Common/SuccessModal/SuccessModal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 import ReservationModal from '@/components/Common/ReservationModal/ReservationModal'
 import dayjs, { Dayjs } from 'dayjs'
+import { Booking, BookingService } from '@/services/BookingService'
 
 export default function UserReservationsPage() {
   //add DELETE api on onClose_Confirm (warning delete modal)
+  const [reservations,setReservations] = useState<Booking>()
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [type, setType] = useState('UPDATE')
@@ -15,6 +18,7 @@ export default function UserReservationsPage() {
   const [focusReserve, setFocusReserve] = useState(0)
   const [pickDate,setPickDate] = useState<Dayjs | null>(null)
   const [participants,setparticipants] = useState(0)
+
   const reserve_1 = {
     reserve_id: '001',
     restaurant: {
@@ -52,6 +56,15 @@ export default function UserReservationsPage() {
     participants: 5,
   }
   const myReserve = [reserve_1, reserve_2, reserve_1]
+  const { data: session } = useSession()
+  useEffect(() => {
+    const fetchReservations = async () => {
+      const reserves = await BookingService.getAllBookings(session?.user.token)
+      setReservations(reserves)
+    }
+    fetchReservations()
+  }, [setReservations, BookingService.getAllBookings(session?.user.token)])
+  console.log(reservations)
   return (
     <div className="mt-8 flex flex-col items-center justify-center space-y-10">
       <div className="relative flex flex-col items-center justify-center">
@@ -62,12 +75,12 @@ export default function UserReservationsPage() {
           MY RESERVATION
         </div>
         <div className="text-zinc-600 text-3xl font-medium font-['Helvetica Neue'] leading-[45px]">
-          Total : {myReserve.length}{' '}
-          {myReserve.length > 1 ? 'Reservations' : 'Reservation'}
+          Total : {reservations?.length}{' '}
+          {reservations?.length > 1 ? 'Reservations' : 'Reservation'}
         </div>
       </div>
       <div className="w-fit py-5 px-16 relative  bg-zinc-100 rounded-xl shadow items-center justyfy-center space-y-5">
-        {myReserve.map((res: Object, index: number) => (
+        {reservations?.map((res: Object, index: number) => (
           <ReservationCard
             onCancel={() => {
               setIsWarningModalOpen(true)
