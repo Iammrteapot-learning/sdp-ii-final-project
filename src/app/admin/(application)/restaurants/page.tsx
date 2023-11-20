@@ -1,5 +1,6 @@
 'use client'
 import RestaurantCard from '@/components/AdminPage/RestaurantCard/RestaurantCard'
+import RestaurantModal from '@/components/AdminPage/RestaurantModal/RestaurantModal'
 import AddIcon from '@/components/Common/Icon/AddIcon'
 import SearchIcon from '@/components/Common/Icon/SearchIcon'
 import InputFieldWithOutLabel from '@/components/Common/InputFieldWithOutLabel/InputFieldWithOutLabel'
@@ -16,6 +17,8 @@ export default function AdminRestaurantsPage() {
   const [searchInput, setSearchInput] = useState('')
   const [restaurantList, setRestaurantList] = useState<RestaurantWithFlag[]>([])
   const [triggerSearch, setTriggerSearch] = useState(false)
+
+  const [isShowCreateModal, setIsShowCreateModal] = useState(false)
 
   useEffect(() => {
     const fetchRestaurantList = async () => {
@@ -75,7 +78,10 @@ export default function AdminRestaurantsPage() {
               <SearchIcon />
             </div>
           </div>
-          <div className="cursor-pointer">
+          <div
+            className="cursor-pointer"
+            onClick={() => setIsShowCreateModal(true)}
+          >
             <AddIcon />
           </div>
         </div>
@@ -102,6 +108,11 @@ export default function AdminRestaurantsPage() {
           })}
         </div>
       </div>
+      <RestaurantModal
+        isVisible={isShowCreateModal}
+        onClose={() => setIsShowCreateModal(false)}
+        modalType={'create'}
+      />
     </main>
   )
 }
