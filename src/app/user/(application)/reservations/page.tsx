@@ -10,14 +10,14 @@ import { Booking, BookingService } from '@/services/BookingService'
 
 export default function UserReservationsPage() {
   //add DELETE api on onClose_Confirm (warning delete modal)
-  const [reservations,setReservations] = useState<Booking>()
+  const [reservations, setReservations] = useState<Booking[]>([])
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [type, setType] = useState('UPDATE')
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [focusReserve, setFocusReserve] = useState(0)
-  const [pickDate,setPickDate] = useState<Dayjs | null>(null)
-  const [participants,setparticipants] = useState(0)
+  const [pickDate, setPickDate] = useState<Dayjs>(dayjs())
+  const [participants, setParticipants] = useState(0)
 
   const reserve_1 = {
     reserve_id: '001',
@@ -107,14 +107,15 @@ export default function UserReservationsPage() {
         }
         tel={myReserve[focusReserve].restaurant.res_tel}
         isVisible={isReservationModalOpen}
-        reserve_number={myReserve[focusReserve].participants}
-        reserve_date={dayjs(myReserve[focusReserve].date, 'YYYY-MM-DD')}
-        onClose_Confirm={() => {
+        onConfirm={() => {
           setIsReservationModalOpen(false)
           setIsWarningModalOpen(true)
         }}
-        onClose_Cancel={() => setIsReservationModalOpen(false)}
-        onDateNumberChange={(date:Dayjs|null,number:number) => {setPickDate(date); setparticipants(number);}}
+        onClose={() => setIsReservationModalOpen(false)}
+        onDateNumberChange={(date: Dayjs, number: number) => {
+          setPickDate(date)
+          setParticipants(number)
+        }}
       />
       <WarningModal
         type={type}

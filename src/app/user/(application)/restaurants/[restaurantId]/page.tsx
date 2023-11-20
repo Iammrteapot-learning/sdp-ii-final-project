@@ -15,26 +15,27 @@ import {
   RestaurantService,
 } from '@/services/RestaurantService'
 
+const defaultRestaurant: RestaurantInformation = {
+  name: '',
+  address: '',
+  foodtype: '',
+  province: '',
+  postalcode: '',
+  tel: '',
+  picture: '',
+}
+
 export default function UserRestaurantDetailPage({
   params,
 }: {
   params: { restaurantId: string }
 }) {
-  // //mock data
-  // const name = 'Enoteca Italian restaurant'
-  // const foodType = 'Italian'
-  // const province = 'Bangkok'
-  // const address =
-  //   'Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon'
-  // const postalcode = '10101'
-  // const tel = '081-234-5678'
-  // const img = '/images/Italian.png'
-  //modal control
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [pickDate, setPickDate] = useState<Dayjs | null>(null)
-  const [participants, setparticipants] = useState(0)
-  const [restaurant, setRestaurant] = useState<RestaurantInformation>()
+  const [participants, setParticipants] = useState(0)
+  const [restaurant, setRestaurant] =
+    useState<RestaurantInformation>(defaultRestaurant)
   const isImageUrl = (url: string): boolean =>
     /\.(jpeg|jpg|gif|png|bmp)$/i.test(url)
 
@@ -46,7 +47,7 @@ export default function UserRestaurantDetailPage({
     fetchRestaurant()
   }, [setRestaurant, RestaurantService.getRestaurantById])
 
-  const foodType = restaurant?.foodtype.split(',').filter((tag) => tag.trim())
+  const foodType = restaurant.foodtype.split(',').filter((tag) => tag.trim())
 
   return (
     <div className="flex justify-center items-center mt-8">
@@ -66,19 +67,19 @@ export default function UserRestaurantDetailPage({
           </div>
           <div className="p-3 space-y-4">
             <div className="text-5xl text-red-500 font-medium font-['Helvetica Neue'] leading-[72px]">
-              {restaurant?.name}
+              {restaurant.name}
             </div>
             <div className="flex flex-row space-x-2">
-              {foodType?.map((food) => (
+              {foodType.map((food) => (
                 <Tag label={food} />
               ))}
-              <Tag label={!!restaurant? restaurant.province : ""} />
+              <Tag label={restaurant.province} />
             </div>
             <Address
-              address={restaurant?.address}
-              tel={restaurant?.tel}
-              province={restaurant?.province}
-              postalcode={restaurant?.postalcode}
+              address={restaurant.address}
+              tel={restaurant.tel}
+              province={restaurant.province}
+              postalcode={restaurant.postalcode}
             />
             <ReservationNoti />
             <div className="flex flex-row space-x-4 w-fit justify-center items-center">
@@ -91,25 +92,31 @@ export default function UserRestaurantDetailPage({
         </div>
       </div>
       <ReservationModal
-        name={restaurant?.name}
-        address={restaurant?.address + ' ' + restaurant?.province + ' ' + restaurant?.postalcode}
-        tel={restaurant?.tel}
+        name={restaurant.name}
+        address={
+          restaurant.address +
+          ' ' +
+          restaurant.province +
+          ' ' +
+          restaurant.postalcode
+        }
+        tel={restaurant.tel}
         isVisible={isReservationModalOpen}
-        onClose_Confirm={() => {
+        onConfirm={() => {
           setIsReservationModalOpen(false)
           setIsSuccessModalOpen(true)
         }}
-        onClose_Cancel={() => setIsReservationModalOpen(false)}
+        onClose={() => setIsReservationModalOpen(false)}
         onDateNumberChange={(date: Dayjs | null, number: number) => {
           setPickDate(date)
-          setparticipants(number)
+          setParticipants(number)
         }}
       />
       <SuccessModal
         type={'CREATE'}
         isVisible={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
-        name={restaurant?.name}
+        name={restaurant.name}
         date={dayjs(pickDate).format('YYYY/MM/DD')}
         number={participants}
       />
