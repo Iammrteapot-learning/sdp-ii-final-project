@@ -1,6 +1,16 @@
 import { ContentType } from './ContentType'
 import { serviceConfig } from './serviceConfig'
 
+export type RestaurantRequestBody = {
+  name: string
+  address: string
+  foodtype: string
+  province: string
+  postalcode: string
+  tel: string
+  picture: string
+}
+
 export type RestaurantInformation = {
   name: string
   address: string
@@ -16,7 +26,7 @@ export type RestaurantInformation = {
 
 export const RestaurantService = {
   createRestaurant: async (
-    requestBody: RestaurantInformation,
+    requestBody: RestaurantRequestBody,
     token: string
   ): Promise<RestaurantInformation> => {
     const url = `${serviceConfig.backendBaseUrl}/api/v1/restaurants`
@@ -81,7 +91,7 @@ export const RestaurantService = {
   },
   editRestaurantById: async (
     restaurantId: string,
-    requestBody: RestaurantInformation,
+    requestBody: RestaurantRequestBody,
     token: string
   ): Promise<RestaurantInformation> => {
     const url = `${serviceConfig.backendBaseUrl}/api/v1/restaurants/${restaurantId}`
