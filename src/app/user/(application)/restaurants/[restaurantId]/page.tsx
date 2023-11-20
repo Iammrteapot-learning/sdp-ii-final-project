@@ -7,51 +7,78 @@ import Address from '@/components/UserPage/AddressComponent/Address'
 import BookNowButton from '@/components/UserPage/BookNowButton/BookNowButton'
 import ReservationNoti from '@/components/UserPage/ReservationNotification/ReservationNoti'
 import RestaurantImage from '@/components/UserPage/RestaurantImage/RestaurantImage'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
+import {
+  RestaurantInformation,
+  RestaurantService,
+} from '@/services/RestaurantService'
 
 export default function UserRestaurantDetailPage({
   params,
 }: {
   params: { restaurantId: string }
 }) {
-  //mock data
-  const name = "Enoteca Italian restaurant"
-  const foodType = "Italian"
-  const province = "Bangkok"
-  const address = "Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon"
-  const postalcode = "10101"
-  const tel = "081-234-5678"
-  const img = "/images/Italian.png"
+  // //mock data
+  // const name = 'Enoteca Italian restaurant'
+  // const foodType = 'Italian'
+  // const province = 'Bangkok'
+  // const address =
+  //   'Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon'
+  // const postalcode = '10101'
+  // const tel = '081-234-5678'
+  // const img = '/images/Italian.png'
   //modal control
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const [pickDate,setPickDate] = useState<Dayjs | null>(null)
-  const [participants,setparticipants] = useState(0)
+  const [pickDate, setPickDate] = useState<Dayjs | null>(null)
+  const [participants, setparticipants] = useState(0)
+  const [restaurant, setRestaurant] = useState<RestaurantInformation>()
+  const isImageUrl = (url: string): boolean =>
+    /\.(jpeg|jpg|gif|png|bmp)$/i.test(url)
+
+  useEffect(() => {
+    const fetchRestaurant = async () => {
+      const res = await RestaurantService.getRestaurantById(params.restaurantId)
+      setRestaurant(res)
+    }
+    fetchRestaurant()
+  }, [setRestaurant, RestaurantService.getRestaurantById])
+
+  const foodType = restaurant?.foodtype.split(',').filter((tag) => tag.trim())
+
   return (
-    <div className='flex justify-center items-center mt-8'>
+    <div className="flex justify-center items-center mt-8">
       <div className="w-fit flex flex-col p-3 justify-center justify-self-center">
         <div className="relative flex items-start">
           <BackButton />
         </div>
         <div className="w-fit flex flex-row space-x-20 mt-12">
           <div className="p-3">
-            <RestaurantImage img={img} />
+            <RestaurantImage
+              img={
+                !!restaurant && isImageUrl(restaurant.picture)
+                  ? restaurant.picture
+                  : ''
+              }
+            />
           </div>
           <div className="p-3 space-y-4">
             <div className="text-5xl text-red-500 font-medium font-['Helvetica Neue'] leading-[72px]">
-              {name}
+              {restaurant?.name}
             </div>
             <div className="flex flex-row space-x-2">
-              <Tag label={foodType} />
-              <Tag label={province} />
+              {foodType?.map((food) => (
+                <Tag label={food} />
+              ))}
+              <Tag label={!!restaurant? restaurant.province : ""} />
             </div>
             <Address
-              address={address}
-              tel={tel}
-              province={province}
-              postalcode={postalcode}
+              address={restaurant?.address}
+              tel={restaurant?.tel}
+              province={restaurant?.province}
+              postalcode={restaurant?.postalcode}
             />
             <ReservationNoti />
             <div className="flex flex-row space-x-4 w-fit justify-center items-center">
@@ -64,20 +91,26 @@ export default function UserRestaurantDetailPage({
         </div>
       </div>
       <ReservationModal
-        name = {name}
-        address={address + " " + province + " " + postalcode}
-        tel={tel}
+        name={restaurant?.name}
+        address={restaurant?.address + ' ' + restaurant?.province + ' ' + restaurant?.postalcode}
+        tel={restaurant?.tel}
         isVisible={isReservationModalOpen}
-        onClose_Confirm={() => {setIsReservationModalOpen(false); setIsSuccessModalOpen(true);}}
+        onClose_Confirm={() => {
+          setIsReservationModalOpen(false)
+          setIsSuccessModalOpen(true)
+        }}
         onClose_Cancel={() => setIsReservationModalOpen(false)}
-        onDateNumberChange={(date:Dayjs|null,number:number) => {setPickDate(date); setparticipants(number);}}
+        onDateNumberChange={(date: Dayjs | null, number: number) => {
+          setPickDate(date)
+          setparticipants(number)
+        }}
       />
       <SuccessModal
         type={'CREATE'}
         isVisible={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
-        name={name}
-        date={dayjs(pickDate).format("YYYY/MM/DD")}
+        name={restaurant?.name}
+        date={dayjs(pickDate).format('YYYY/MM/DD')}
         number={participants}
       />
     </div>

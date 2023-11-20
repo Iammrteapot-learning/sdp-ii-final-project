@@ -18,7 +18,6 @@ export default function UserRestaurantsPage() {
     }
     fetchRestaurantList()
   }, [setRestaurants, RestaurantService.getAllRestaurants])
-  // const tags = foodtype.split(',').filter((tag) => tag.trim())
 
   return (
     <div className="w-full flex flex-col justify-center items-center mt-8">
