@@ -22,11 +22,19 @@ export default function UserReservationsPage() {
   if(!session){return;}
   useEffect(() => {
     const fetchReservations = async () => {
-      const reserves = await BookingService.getAllBookings(session?.user.token)
+      const reserves = await BookingService.getAllBookings(session.user.token)
       setReservations(reserves)
     }
     fetchReservations()
-  }, [setReservations, BookingService.getAllBookings(session?.user.token)])
+  }, [session,setReservations,BookingService.getAllBookings(session.user.token)])
+
+  const handleConfirmDelete = async (bookingId: string, token: string) => {
+    try {
+      await BookingService.deleteBookingByBookingId(bookingId, token)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   
   return (
     <div className="mt-8 flex flex-col items-center justify-center space-y-10">
@@ -79,23 +87,27 @@ export default function UserReservationsPage() {
         onCloseCancel={() => setIsReservationModalOpen(false)}
         onDateNumberChange={(date:Dayjs|null,number:number) => {setPickDate(date); setparticipants(number);}}
       /> */}
-      {/* <WarningModal
+      <WarningModal
         type={type}
         isVisible={isWarningModalOpen}
         onClose_Dismiss={() => setIsWarningModalOpen(false)}
-        onClose_Confirm={() => {
+        onClose_Confirm={async () => {
           //if delete DELETE using myReserve[focusReserve].reserve_id
           //if update POST using update date pickDate and participants
           setIsWarningModalOpen(false)
+          await handleConfirmDelete(
+            reservations[focusReserve]._id ?? '',
+            session.user.token
+          )
           setIsSuccessModalOpen(true)
         }}
-        id={reservations[focusReserve]._id}
+        id={reservations[focusReserve]?._id}
       />
       <SuccessModal
         type={type}
         isVisible={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
-      /> */}
+      />
     </div>
   )
 }
