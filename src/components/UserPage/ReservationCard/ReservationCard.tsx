@@ -1,3 +1,4 @@
+import { Booking } from '@/services/BookingService'
 import ReservationImage from '../ReservationImage/ReservationImage'
 import CancelReservationButton from './CancelReservationButton'
 import dayjs, { Dayjs } from 'dayjs'
@@ -15,7 +16,7 @@ export default function ReservationCard({
 }: {
   onCancel: Function
   onEdit: Function
-  reservation: Object
+  reservation: Booking
 }) {
   const dayOfWeek = getDayOfWeek(reservation.bookingDate.substring(0, 10))
   //for map color
@@ -32,7 +33,7 @@ export default function ReservationCard({
     <div className="w-fit flex flex-row relative bg-neutral-50 rounded-xl shadow items-center p-3 space-x-5 hover:border-2 hover:border-slate-200">
       <ReservationImage
         img={reservation.restaurant.picture}
-        res_id={reservation.restaurant.id}
+        res_id={reservation.restaurant.id??""}
       />
       <div className="space-y-1 p-2 w-fit">
         <div className="text-black text-base font-normal font-['Helvetica Neue'] leading-normal">
