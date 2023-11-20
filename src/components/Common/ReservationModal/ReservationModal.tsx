@@ -7,22 +7,26 @@ import ModalOverlay from '../ModalOverlay/ModalOverlay'
 import dayjs, { Dayjs } from 'dayjs'
 
 type ReservationModalProps = {
-  name: string;
-  address: string;
-  tel: string;
-  reserve_date ?: Dayjs;
-  reserve_number?: number;
-  isVisible: boolean;
-  onClose_Confirm: () => void;
-  onClose_Cancel: () => void;
-  onDateNumberChange: (date: Dayjs | null, number: number) => void;
+  name: string
+  address: string
+  tel: string
+  reserve_date?: Dayjs
+  reserve_number?: number
+  isVisible: boolean
+  onClose_Confirm: () => void
+  onClose_Cancel: () => void
+  onDateNumberChange: (date: Dayjs | null, number: number) => void
 }
 
-export default function ReservationModal(param : ReservationModalProps) {
-  var initNumber = 1;
-  var initDate = null;
-  if(!!param.reserve_number){initNumber = param.reserve_number}
-  if(!!param.reserve_date){initDate = param.reserve_date}
+export default function ReservationModal(param: ReservationModalProps) {
+  var initNumber = 1
+  var initDate = null
+  if (!!param.reserve_number) {
+    initNumber = param.reserve_number
+  }
+  if (!!param.reserve_date) {
+    initDate = param.reserve_date
+  }
   const [bookingDate, setBookingDate] = useState<Dayjs | null>(null)
   const [guestNumber, setGuestNumber] = useState<number>(1)
   const [error, setError] = useState(false)
@@ -33,11 +37,9 @@ export default function ReservationModal(param : ReservationModalProps) {
   //remain POST data & Redux at onClick button
   useEffect(() => {
     setGuestNumber(initNumber)
-  },[initNumber])
-  useEffect(() => {
-    if(!!initDate){ setBookingDate(initDate)}
-  },[initDate])
-  
+    setBookingDate(initDate)
+  },[param.isVisible])
+
   return (
     <ModalOverlay isVisible={param.isVisible} onClose={param.onClose_Cancel}>
       <div className="w-[680px] relative bg-zinc-100 rounded-[30px] shadow flex-col justify-start items-center inline-flex py-4">
@@ -71,7 +73,9 @@ export default function ReservationModal(param : ReservationModalProps) {
             className="px-4 py-2 bg-sky-400 rounded justify-start items-center gap-2 inline-flex text-white text-base font-medium"
             onClick={() => {
               if (!!bookingDate) {
-                if(param.onDateNumberChange!!){param.onDateNumberChange(bookingDate, guestNumber)}
+                if (param.onDateNumberChange!!) {
+                  param.onDateNumberChange(bookingDate, guestNumber)
+                }
                 param.onClose_Confirm()
               } else {
                 setError(true)

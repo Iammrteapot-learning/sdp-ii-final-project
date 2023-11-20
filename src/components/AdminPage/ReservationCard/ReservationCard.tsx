@@ -1,7 +1,19 @@
 import CalendarIcon from '@/components/Common/Icon/CalendarIcon'
 import PencilIcon from '@/components/Common/Icon/PencilIcon'
 import dayjs, { Dayjs } from 'dayjs'
-export default function ReservationCard({date,res_list,onDelete,onEdit} : {date:string,res_list:any[],onDelete: () => void,onEdit : () => void}) {
+export default function ReservationCard({
+  date,
+  res_list,
+  onDelete,
+  onEdit,
+  onFocus,
+}: {
+  date: string
+  res_list: any[]
+  onDelete: () => void
+  onEdit: () => void
+  onFocus: Function
+}) {
   const getDayOfWeek = (date: string): string => {
     const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
     const dayIndex = new Date(date).getDay()
@@ -40,7 +52,7 @@ export default function ReservationCard({date,res_list,onDelete,onEdit} : {date:
     )
   }
 
-  const eachRow = (res : object) => {
+  const eachRow = (res: object) => {
     return (
       <tr>
         <td>{res.name}</td>
@@ -50,11 +62,22 @@ export default function ReservationCard({date,res_list,onDelete,onEdit} : {date:
         <td>
           <div className="flex flex-row space-x-8 justify-center items-center">
             <div className="px-4 bg-red-500 rounded-full justify-start items-center inline-flex hover:bg-red-600">
-              <div className="text-center text-white text-xs font-bold font-['Helvetica Neue'] leading-[18px]" onClick={onDelete}>
+              <div
+                className="text-center text-white text-xs font-bold font-['Helvetica Neue'] leading-[18px]"
+                onClick={() => {
+                  onFocus(res)
+                  onDelete()
+                }}
+              >
                 Delete
               </div>
             </div>
-            <button onClick={onEdit}>
+            <button
+              onClick={() => {
+                onFocus(res)
+                onEdit()
+              }}
+            >
               <PencilIcon />
             </button>
           </div>
@@ -82,9 +105,7 @@ export default function ReservationCard({date,res_list,onDelete,onEdit} : {date:
       <div className="w-fit bg-zinc-100 rounded-xl p-3">
         <table className="table-auto border-separate border-spacing-x-10">
           {headerLine()}
-          <tbody>
-            {res_list.map((res : object) => eachRow(res))}
-          </tbody>
+          <tbody>{res_list.map((res: object) => eachRow(res))}</tbody>
         </table>
       </div>
     </div>
