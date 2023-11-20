@@ -5,68 +5,138 @@ import AddIcon from '@/components/Common/Icon/AddIcon'
 import ReservationModal from '@/components/Common/ReservationModal/ReservationModal'
 import SuccessModal from '@/components/Common/SuccessModal/SuccessModal'
 import WarningModal from '@/components/Common/WarningModal/WarningModal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import dayjs, { Dayjs } from 'dayjs'
+import {
+  RestaurantInformation,
+  RestaurantService,
+} from '@/services/RestaurantService'
+import { Booking, BookingService } from '@/services/BookingService'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { SuccessModalType } from '@/components/Common/SuccessModal/RestaurantSuccessModal'
+import { WarningModalType } from '@/components/Common/WarningModal/RestaurantWarningModal'
+
+const defaultRestaurant: RestaurantInformation = {
+  name: '',
+  address: '',
+  foodtype: '',
+  province: '',
+  postalcode: '',
+  tel: '',
+  picture: '',
+}
+
+const defaultReservation: Booking = {
+  _id: '',
+  bookingDate: '',
+  numOfGuests: 0,
+  user: {
+    _id: '',
+    name: '',
+    email: '',
+    tel: '',
+  },
+  restaurant: {
+    name: '',
+    address: '',
+    foodtype: '',
+    province: '',
+    postalcode: '',
+    tel: '',
+    picture: '',
+    id: undefined,
+    __v: undefined,
+    _id: undefined,
+  },
+  createdAt: '',
+  __v: 0,
+}
 
 export default function AuthRestaurantDetailPage({
   params,
 }: {
   params: { restaurantId: string }
 }) {
-  //mock data
-  const res_1 = {
-    date: '2023-12-13',
-    id: '001',
-    name: 'Tinna Chuaykoblap',
-    tel: '081-234-5678',
-    participants: '2',
-    createdAt: '2023-12-12',
+  const router = useRouter()
+  const { data: session } = useSession()
+  if (!session || session.user.role !== 'admin') {
+    alert('Please login to access this page')
+    router.push('/admin/auth')
+    return
   }
-  const res_3 = {
-    date: '2023-12-13',
-    id: '003',
-    name: 'Kim Tae Rae',
-    tel: '081-234-5678',
-    participants: '2',
-    createdAt: '2023-12-12',
-  }
-  const res_2 = {
-    date: '2023-12-14',
-    id: '002',
-    name: 'Tinna Chuaykoblap',
-    tel: '081-234-5678',
-    participants: '2',
-    createdAt: '2023-12-12',
-  }
-  const eachDateReserves = [res_1, res_1, res_3, res_2, res_2]
-  const restaurant = {
-    img: '/images/italian.png',
-    res_id: '001',
-    res_name: 'Enoteca Italian restaurant',
-    foodType: 'Italian',
-    province: 'Bangkok',
-    address:
-      'Soi Sukhumvit 27, Khwaeng Khlong Toei Nuea, Khet Watthana, Krung Thep Maha Nakhon',
-    postalcode: '10101',
-    res_tel: '081-234-5678',
-  }
-  // group by date
-  const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
-    arr.reduce((groups, item) => {
-      ;(groups[key(item)] ||= []).push(item)
-      return groups
-    }, {} as Record<K, T[]>)
 
-  const results = groupBy(eachDateReserves, (i) => i.date)
+  const [restaurantInfo, setRestaurantInfo] =
+    useState<RestaurantInformation>(defaultRestaurant)
+  const [reservationList, setReservationList] = useState<Booking[]>([])
+  const [results, setResults] = useState<Record<string, Booking[]>>({})
 
-  //
+  useEffect(() => {
+    const fetchRestaurantInfo = async () => {
+      try {
+        const response = await RestaurantService.getRestaurantById(
+          params.restaurantId
+        )
+        setRestaurantInfo(response)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchRestaurantInfo()
+  }, [
+    params.restaurantId,
+    RestaurantService.getRestaurantById,
+    setRestaurantInfo,
+  ])
+
+  useEffect(() => {
+    const fetchReservationList = async () => {
+      try {
+        const response = await BookingService.getAllBookings(
+          session.user.token,
+          params.restaurantId
+        )
+        setReservationList(
+          response.map((reservation) => {
+            return {
+              ...reservation,
+              bookingDate: reservation.bookingDate.substring(0, 10),
+              createdAt: reservation.createdAt.substring(0, 10),
+            }
+          })
+        )
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchReservationList()
+  }, [
+    params.restaurantId,
+    session,
+    setReservationList,
+    BookingService.getAllBookings,
+  ])
+
+  useEffect(() => {
+    const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
+      arr.reduce((groups, item) => {
+        ;(groups[key(item)] ||= []).push(item)
+        return groups
+      }, {} as Record<K, T[]>)
+
+    setResults(
+      groupBy(reservationList, (reservation) => reservation.bookingDate)
+    )
+  }, [reservationList, setResults])
+
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [pickDate, setPickDate] = useState<Dayjs | null>(null)
   const [participants, setParticipants] = useState(0)
-  const [focusReserve, setFocusReserve] = useState<Object>()
-  const [type, setType] = useState('CREATE')
+  const [focusReserve, setFocusReserve] = useState<Booking>(defaultReservation)
+  const [successType, setSuccessType] = useState<SuccessModalType>('CREATE')
+  const [warningType, setWarningType] = useState<WarningModalType>('DELETE')
 
   return (
     <div className="mt-8 flex flex-col justify-center items-center px-12 pb-16">
@@ -75,7 +145,7 @@ export default function AuthRestaurantDetailPage({
       </div>
       <div className="px-3 w-fit bg-red-500 rounded-[20px] shadow-inner">
         <div className="text-center text-white text-4xl font-medium font-['Helvetica Neue'] leading-[72px]">
-          {restaurant.res_name}
+          {restaurantInfo.name}
         </div>
       </div>
       <div
@@ -88,7 +158,7 @@ export default function AuthRestaurantDetailPage({
         <div
           className="w-full cursor-pointer flex items-end justify-end"
           onClick={() => {
-            setType('CREATE')
+            setSuccessType('CREATE')
             setIsReservationModalOpen(true)
           }}
         >
@@ -100,14 +170,16 @@ export default function AuthRestaurantDetailPage({
               date={date}
               res_list={reservations}
               onDelete={() => {
-                setType('DELETE')
+                setSuccessType('DELETE')
+                setWarningType('DELETE')
                 setIsWarningModalOpen(true)
               }}
               onEdit={() => {
-                setType('UPDATE')
+                setSuccessType('UPDATE')
+                setWarningType('UPDATE')
                 setIsReservationModalOpen(true)
               }}
-              onFocus={(reserve: object) => {
+              onFocus={(reserve: Booking) => {
                 setFocusReserve(reserve)
               }}
             />
@@ -116,43 +188,47 @@ export default function AuthRestaurantDetailPage({
       </div>
 
       <WarningModal
-        type={type}
+        type={warningType}
         isVisible={isWarningModalOpen}
         onClose_Dismiss={() => setIsWarningModalOpen(false)}
         onClose_Confirm={() => {
           setIsWarningModalOpen(false)
           setIsSuccessModalOpen(true)
         }}
-        id={!!focusReserve ? focusReserve.id : ''}
+        id={focusReserve._id}
       />
       <SuccessModal
-        type={type}
-        name={restaurant.res_name}
+        type={successType}
+        name={restaurantInfo.name}
         date={dayjs(pickDate).format('YYYY/MM/DD')}
         number={participants}
         isVisible={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
       />
       <ReservationModal
-        name={restaurant.res_name}
+        name={restaurantInfo.name}
         address={
-          restaurant.address +
+          restaurantInfo.address +
           ' ' +
-          restaurant.province +
+          restaurantInfo.province +
           ' ' +
-          restaurant.postalcode
+          restaurantInfo.postalcode
         }
-        tel={restaurant.res_tel}
+        tel={restaurantInfo.tel}
         isVisible={isReservationModalOpen}
-        reserve_number={type == 'UPDATE' ? focusReserve.participants : null}
+        reserve_number={
+          successType == 'UPDATE' ? focusReserve.numOfGuests : undefined
+        }
         reserve_date={
-          type == 'UPDATE' ? dayjs(focusReserve.date, 'YYYY-MM-DD') : null
+          successType == 'UPDATE'
+            ? dayjs(focusReserve.bookingDate, 'YYYY-MM-DD')
+            : undefined
         }
         onClose_Confirm={() => {
           setIsReservationModalOpen(false)
-          if (type == 'UPDATE') {
+          if (successType == 'UPDATE') {
             setIsWarningModalOpen(true)
-          } else if (type == 'CREATE') {
+          } else if (successType == 'CREATE') {
             setIsSuccessModalOpen(true)
           }
         }}
