@@ -6,7 +6,7 @@ import LocationIcon from '@/components/Common/Icon/LocationIcon'
 import ImageIcon from '@/components/Common/Icon/ImageIcon'
 import { useCallback, useState } from 'react'
 import {
-  RestaurantInformation,
+  RestaurantRequestBody,
   RestaurantService,
 } from '@/services/RestaurantService'
 import { useSession } from 'next-auth/react'
@@ -35,15 +35,14 @@ const placeholderMessage: Record<InputType, string> = {
   imageUrl: 'Fill in the image URL',
 }
 
-const errorMessage: Record<
-  Exclude<InputType, 'foodType' | 'imageUrl'>,
-  string
-> = {
-  name: 'Please enter the restaurant name',
+const errorMessage: Record<InputType, string> = {
+  name: 'Please enter the restaurant name (max 50 characters)',
   address: 'Please enter the restaurant address',
   province: 'Please enter the restaurant province',
   postalCode: 'Please enter the restaurant postal code',
   telephone: 'Please enter the restaurant telephone',
+  foodType: 'Please enter the restaurant food type',
+  imageUrl: 'Please enter the restaurant image URL',
 }
 
 export default function RestaurantModal({
@@ -80,10 +79,12 @@ export default function RestaurantModal({
   const [imageUrl, setImageUrl] = useState(defaultImageUrl)
 
   const [isNameError, setIsNameError] = useState(false)
+  const [isFoodTypeError, setIsFoodTypeError] = useState(false)
   const [isAddressError, setIsAddressError] = useState(false)
   const [isProvinceError, setIsProvinceError] = useState(false)
   const [isPostalCodeError, setIsPostalCodeError] = useState(false)
   const [isTelephoneError, setIsTelephoneError] = useState(false)
+  const [isImageUrlError, setIsImageUrlError] = useState(false)
 
   const [isShowWarningModal, setIsShowWarningModal] = useState(false)
   const [isShowSuccessModal, setIsShowSuccessModal] = useState(false)
@@ -97,47 +98,69 @@ export default function RestaurantModal({
   }
 
   const validateInput = useCallback(() => {
-    const isNameValid = name !== ''
+    const isNameValid = name !== '' && name.length <= 50
+    const isFoodTypeValid = foodType !== ''
     const isAddressValid = address !== ''
     const isProvinceValid = province !== ''
     const isPostalCodeValid = postalCode.length <= 5
     const isTelephoneValid = telephone.length === 10
+    const isImageUrlValid = imageUrl !== ''
 
     setIsNameError(!isNameValid)
+    setIsFoodTypeError(!isFoodTypeValid)
     setIsAddressError(!isAddressValid)
     setIsProvinceError(!isProvinceValid)
     setIsPostalCodeError(!isPostalCodeValid)
     setIsTelephoneError(!isTelephoneValid)
+    setIsImageUrlError(!isImageUrlValid)
 
     return (
       isNameValid &&
+      isFoodTypeValid &&
       isAddressValid &&
       isProvinceValid &&
       isPostalCodeValid &&
-      isTelephoneValid
+      isTelephoneValid &&
+      isImageUrlValid
     )
   }, [
     name,
+    foodType,
     address,
     province,
     postalCode,
     telephone,
-    setIsAddressError,
+    imageUrl,
     setIsNameError,
+    setIsAddressError,
+    setIsFoodTypeError,
     setIsPostalCodeError,
     setIsProvinceError,
     setIsTelephoneError,
+    setIsImageUrlError,
   ])
 
   const handleConfirmEdit = async (
     restaurantId: string,
-    request: RestaurantInformation
+    request: RestaurantRequestBody,
+    token: string
   ) => {
-    await RestaurantService.editRestaurantById(
-      restaurantId,
-      request,
-      session.user.token
-    )
+    try {
+      await RestaurantService.editRestaurantById(restaurantId, request, token)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleConfirmCreate = async (
+    requestBody: RestaurantRequestBody,
+    token: string
+  ) => {
+    try {
+      await RestaurantService.createRestaurant(requestBody, token)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -179,6 +202,8 @@ export default function RestaurantModal({
                 name={'food-type'}
                 onChange={(value) => setFoodType(value)}
                 placeholder={placeholderMessage['foodType']}
+                isError={isFoodTypeError}
+                errorMessage={errorMessage['foodType']}
                 defaultValue={foodType}
               />
             </div>
@@ -252,6 +277,8 @@ export default function RestaurantModal({
                 name={'image-url'}
                 onChange={(value) => setImageUrl(value)}
                 placeholder={placeholderMessage['imageUrl']}
+                isError={isImageUrlError}
+                errorMessage={errorMessage['imageUrl']}
                 defaultValue={imageUrl}
               />
             </div>
@@ -260,10 +287,24 @@ export default function RestaurantModal({
             <button
               className="px-4 py-2 bg-sky-400 rounded justify-start items-center 
           gap-2 inline-flex text-white text-base font-medium hover:bg-blue-500"
-              onClick={() => {
+              onClick={async () => {
                 if (validateInput()) {
                   if (modalType === 'edit') {
                     setIsShowWarningModal(true)
+                  } else if (modalType === 'create') {
+                    await handleConfirmCreate(
+                      {
+                        name,
+                        address,
+                        foodtype: foodType,
+                        province,
+                        postalcode: postalCode,
+                        tel: telephone,
+                        picture: imageUrl,
+                      },
+                      session.user.token
+                    )
+                    setIsShowSuccessModal(true)
                   }
                 }
               }}
@@ -296,15 +337,19 @@ export default function RestaurantModal({
           isVisible={isShowWarningModal}
           onDismiss={() => setIsShowWarningModal(false)}
           onConfirm={async () => {
-            await handleConfirmEdit(restaurantId ?? '', {
-              name,
-              address,
-              foodtype: foodType,
-              province,
-              postalcode: postalCode,
-              tel: telephone,
-              picture: imageUrl,
-            })
+            await handleConfirmEdit(
+              restaurantId ?? '',
+              {
+                name,
+                address,
+                foodtype: foodType,
+                province,
+                postalcode: postalCode,
+                tel: telephone,
+                picture: imageUrl,
+              },
+              session.user.token
+            )
             setIsShowWarningModal(false)
             setIsShowSuccessModal(true)
           }}
