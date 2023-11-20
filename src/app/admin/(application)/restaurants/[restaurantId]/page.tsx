@@ -11,11 +11,16 @@ import {
   RestaurantInformation,
   RestaurantService,
 } from '@/services/RestaurantService'
-import { Booking, BookingService } from '@/services/BookingService'
+import {
+  Booking,
+  BookingRequestBody,
+  BookingService,
+} from '@/services/BookingService'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { SuccessModalType } from '@/components/Common/SuccessModal/RestaurantSuccessModal'
 import { WarningModalType } from '@/components/Common/WarningModal/RestaurantWarningModal'
+import ErrorModal from '@/components/Common/ErrorModal/ErrorModal'
 
 const defaultRestaurant: RestaurantInformation = {
   name: '',
@@ -70,6 +75,33 @@ export default function AuthRestaurantDetailPage({
     useState<RestaurantInformation>(defaultRestaurant)
   const [reservationList, setReservationList] = useState<Booking[]>([])
   const [results, setResults] = useState<Record<string, Booking[]>>({})
+
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+  const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
+  const [pickDate, setPickDate] = useState<Dayjs | null>(null)
+  const [participants, setParticipants] = useState(0)
+  const [focusReserve, setFocusReserve] = useState<Booking>(defaultReservation)
+  const [successType, setSuccessType] = useState<SuccessModalType>('CREATE')
+  const [warningType, setWarningType] = useState<WarningModalType>('DELETE')
+
+  const handleConfirmCreate = async (
+    requestBody: BookingRequestBody,
+    restaurantId: string,
+    token: string
+  ): Promise<boolean> => {
+    try {
+      return await BookingService.createBooking(
+        requestBody,
+        restaurantId,
+        token
+      )
+    } catch (error) {
+      console.log(error)
+    }
+    return false
+  }
 
   useEffect(() => {
     const fetchRestaurantInfo = async () => {
@@ -129,15 +161,6 @@ export default function AuthRestaurantDetailPage({
     )
   }, [reservationList, setResults])
 
-  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
-  const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
-  const [pickDate, setPickDate] = useState<Dayjs | null>(null)
-  const [participants, setParticipants] = useState(0)
-  const [focusReserve, setFocusReserve] = useState<Booking>(defaultReservation)
-  const [successType, setSuccessType] = useState<SuccessModalType>('CREATE')
-  const [warningType, setWarningType] = useState<WarningModalType>('DELETE')
-
   return (
     <div className="mt-8 flex flex-col justify-center items-center px-12 pb-16">
       <div className="w-full flex items-start">
@@ -186,25 +209,6 @@ export default function AuthRestaurantDetailPage({
           ))}
         </div>
       </div>
-
-      <WarningModal
-        type={warningType}
-        isVisible={isWarningModalOpen}
-        onClose_Dismiss={() => setIsWarningModalOpen(false)}
-        onClose_Confirm={() => {
-          setIsWarningModalOpen(false)
-          setIsSuccessModalOpen(true)
-        }}
-        id={focusReserve._id}
-      />
-      <SuccessModal
-        type={successType}
-        name={restaurantInfo.name}
-        date={dayjs(pickDate).format('YYYY/MM/DD')}
-        number={participants}
-        isVisible={isSuccessModalOpen}
-        onClose={() => setIsSuccessModalOpen(false)}
-      />
       <ReservationModal
         name={restaurantInfo.name}
         address={
@@ -216,27 +220,58 @@ export default function AuthRestaurantDetailPage({
         }
         tel={restaurantInfo.tel}
         isVisible={isReservationModalOpen}
-        reserve_number={
-          successType == 'UPDATE' ? focusReserve.numOfGuests : undefined
-        }
-        reserve_date={
-          successType == 'UPDATE'
-            ? dayjs(focusReserve.bookingDate, 'YYYY-MM-DD')
-            : undefined
-        }
-        onClose_Confirm={() => {
-          setIsReservationModalOpen(false)
+        onConfirm={async function ({
+          bookingDate,
+          numOfGuests,
+          createdAt,
+        }: BookingRequestBody) {
           if (successType == 'UPDATE') {
             setIsWarningModalOpen(true)
           } else if (successType == 'CREATE') {
-            setIsSuccessModalOpen(true)
+            if (
+              await handleConfirmCreate(
+                { bookingDate, numOfGuests, createdAt },
+                params.restaurantId,
+                session.user.token
+              )
+            ) {
+              setIsSuccessModalOpen(true)
+            } else {
+              setIsErrorModalOpen(true)
+            }
           }
         }}
-        onClose_Cancel={() => setIsReservationModalOpen(false)}
-        onDateNumberChange={(date: Dayjs | null, number: number) => {
-          setPickDate(date)
-          setParticipants(number)
+        onClose={() => setIsReservationModalOpen(false)}
+      />
+      <WarningModal
+        type={warningType}
+        isVisible={isWarningModalOpen}
+        onClose={() => setIsWarningModalOpen(false)}
+        onConfirm={() => {
+          setIsWarningModalOpen(false)
+          setIsSuccessModalOpen(true)
         }}
+        id={focusReserve._id}
+      />
+      <SuccessModal
+        type={successType}
+        name={restaurantInfo.name}
+        date={dayjs(pickDate).format('YYYY/MM/DD')}
+        number={participants}
+        isVisible={isSuccessModalOpen}
+        onClose={() => {
+          setIsSuccessModalOpen(false)
+          setIsReservationModalOpen(false)
+          window.location.reload()
+        }}
+      />
+      <ErrorModal
+        isVisible={isErrorModalOpen}
+        onClose={() => {
+          setIsErrorModalOpen(false)
+          setIsReservationModalOpen(false)
+        }}
+        message={'You have reached the maximum number of reservations.'}
       />
     </div>
   )
