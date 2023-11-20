@@ -1,5 +1,4 @@
-import { RefObject } from 'react'
-
+'use client'
 type InputFieldType = 'text' | 'password'
 
 const errorClass = 'focus:ring-red-500 focus:border-red-500 border-red-300'
@@ -11,6 +10,7 @@ export default function InputFieldWithOutLabel({
   errorMessage = '',
   type = 'text',
   onChange = (value: string) => {},
+  defaultValue,
 }: {
   name: string
   placeholder?: string
@@ -18,6 +18,7 @@ export default function InputFieldWithOutLabel({
   errorMessage?: string
   type?: InputFieldType
   onChange?: (value: string) => void
+  defaultValue?: string
 }) {
   return (
     <div className="w-full">
@@ -30,6 +31,7 @@ export default function InputFieldWithOutLabel({
     text-sm rounded-[4px] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 w-full block p-2.5
     focus-visible:outline-none ${isError && errorClass}`}
         onChange={(e) => onChange(e.target.value)}
+        value={defaultValue}
       />
       {isError && (
         <span className="text-red-500 text-xs italic">{errorMessage}</span>

@@ -76,7 +76,7 @@ export default function SuccessModal(props: SuccessModalProps) {
         <button
           className="mt-3 px-4 py-2 bg-gray-400 rounded justify-start 
         items-center gap-2 inline-flex text-white text-base font-medium 
-        font-['Helvetica Neue'] leading-normal"
+        font-['Helvetica Neue'] leading-normal hover:bg-gray-500"
           onClick={onClose}
         >
           Accept

@@ -3,27 +3,27 @@ import ModalOverlay from '../ModalOverlay/ModalOverlay'
 
 type WarningModalType = 'DELETE' | 'UPDATE'
 const WarningModalMessage: Record<WarningModalType, string> = {
-  DELETE: 'Do you want to cancel your reservation ?',
-  UPDATE: 'Do you want to change your reservation ?',
+  DELETE: 'Do you want to delete RESTAURANT_NAME restaurant ?',
+  UPDATE: "Do you want to change the restaurant's details ?",
 }
 
-export default function WarningModal({
+export default function RestaurantWarningModal({
   type,
   isVisible,
-  onClose_Dismiss,
-  onClose_Confirm,
-  id,
+  onDismiss,
+  onConfirm,
+  restaurantName,
 }: {
   type: WarningModalType
   isVisible: boolean
-  onClose_Dismiss: () => void
-  onClose_Confirm: () => void
-  id: string
+  onDismiss: () => void
+  onConfirm: () => void
+  restaurantName: string
 }) {
   const message = WarningModalMessage[type]
   return (
-    <ModalOverlay isVisible={isVisible} onClose={onClose_Dismiss}>
-      <div className="w-fit h-auto p-4 relative bg-zinc-100 rounded-[30px] shadow flex flex-col items-center">
+    <ModalOverlay isVisible={isVisible} onClose={onDismiss}>
+      <div className="w-fit h-auto p-6 relative gap-4 bg-zinc-100 rounded-[30px] shadow flex flex-col items-center">
         <svg
           width="35"
           height="32"
@@ -40,20 +40,20 @@ export default function WarningModal({
         </svg>
 
         <div className=" relative text-center text-red-500 text-2xl font-bold font-['Helvetica Neue'] leading-9">
-          {message} <br /> Reservation ID : {id}
+          {message.replace('RESTAURANT_NAME', restaurantName)}
         </div>
         <div className="w-[230px] h-10 mt-3 relative space-x-10">
           <button
             className="px-4 py-2 bg-sky-400 rounded justify-start items-center gap-2 inline-flex 
             text-white text-base font-medium hover:bg-sky-500"
-            onClick={onClose_Confirm}
+            onClick={onConfirm}
           >
             Confirm
           </button>
           <button
-            className="px-4 py-2 bg-red-500 rounded justify-start items-center gap-2 inline-flex
-             text-white text-base font-medium hover:bg-red-600"
-            onClick={onClose_Dismiss}
+            className="px-4 py-2 bg-red-500 rounded justify-start items-center gap-2 inline-flex 
+            text-white text-base font-medium hover:bg-red-600"
+            onClick={onDismiss}
           >
             Dismiss
           </button>

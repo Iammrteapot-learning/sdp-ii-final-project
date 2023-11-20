@@ -64,12 +64,12 @@ export default function AuthRestaurantDetailPage({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [pickDate, setPickDate] = useState<Dayjs | null>(null)
-  const [participants, setparticipants] = useState(0)
+  const [participants, setParticipants] = useState(0)
   const [focusReserve, setFocusReserve] = useState<Object>()
   const [type, setType] = useState('CREATE')
 
   return (
-    <div className="mt-8 flex flex-col justify-center items-center px-12">
+    <div className="mt-8 flex flex-col justify-center items-center px-12 pb-16">
       <div className="w-full flex items-start">
         <BackButton />
       </div>
@@ -107,7 +107,9 @@ export default function AuthRestaurantDetailPage({
                 setType('UPDATE')
                 setIsReservationModalOpen(true)
               }}
-              onFocus={(reserve:object) => {setFocusReserve(reserve)}}
+              onFocus={(reserve: object) => {
+                setFocusReserve(reserve)
+              }}
             />
           ))}
         </div>
@@ -121,7 +123,7 @@ export default function AuthRestaurantDetailPage({
           setIsWarningModalOpen(false)
           setIsSuccessModalOpen(true)
         }}
-        id={!!focusReserve ? focusReserve.id : ""}
+        id={!!focusReserve ? focusReserve.id : ''}
       />
       <SuccessModal
         type={type}
@@ -142,8 +144,10 @@ export default function AuthRestaurantDetailPage({
         }
         tel={restaurant.res_tel}
         isVisible={isReservationModalOpen}
-        reserve_number ={type == 'UPDATE' ? focusReserve.participants:null}
-        reserve_date={type=='UPDATE' ? dayjs(focusReserve.date, 'YYYY-MM-DD') : null}
+        reserve_number={type == 'UPDATE' ? focusReserve.participants : null}
+        reserve_date={
+          type == 'UPDATE' ? dayjs(focusReserve.date, 'YYYY-MM-DD') : null
+        }
         onClose_Confirm={() => {
           setIsReservationModalOpen(false)
           if (type == 'UPDATE') {
@@ -155,7 +159,7 @@ export default function AuthRestaurantDetailPage({
         onClose_Cancel={() => setIsReservationModalOpen(false)}
         onDateNumberChange={(date: Dayjs | null, number: number) => {
           setPickDate(date)
-          setparticipants(number)
+          setParticipants(number)
         }}
       />
     </div>

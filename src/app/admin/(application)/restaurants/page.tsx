@@ -61,18 +61,18 @@ export default function AdminRestaurantsPage() {
         <PageTopicText label="Restaurant Management" />
         <div className="flex justify-between w-full">
           <div className="flex flex-row gap-2 items-center w-full">
-            <div
-              className="cursor-pointer"
-              onClick={() => setTriggerSearch(true)}
-            >
-              <SearchIcon />
-            </div>
-            <div className="w-[40%]">
+            <div className="w-[95%]">
               <InputFieldWithOutLabel
                 name={'search'}
                 placeholder="Search Your Restaurant"
                 onChange={(value) => setSearchInput(value)}
               />
+            </div>
+            <div
+              className="cursor-pointer"
+              onClick={() => setTriggerSearch(true)}
+            >
+              <SearchIcon />
             </div>
           </div>
           <div className="cursor-pointer">
@@ -90,11 +90,12 @@ export default function AdminRestaurantsPage() {
                 <RestaurantCard
                   name={restaurant.name}
                   id={restaurant.id ?? ''}
-                  tags={restaurant.foodtype
-                    .split(',')
-                    .filter((tag) => tag.trim())}
-                  location={restaurant.address}
+                  foodType={restaurant.foodtype}
+                  address={restaurant.address}
+                  province={restaurant.province}
+                  postalCode={restaurant.postalcode}
                   tel={restaurant.tel}
+                  picture={restaurant.picture}
                 />
               )
             )

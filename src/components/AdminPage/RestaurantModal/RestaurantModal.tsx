@@ -9,10 +9,10 @@ import {
   RestaurantInformation,
   RestaurantService,
 } from '@/services/RestaurantService'
-import WarningModal from '@/components/Common/WarningModal/WarningModal'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import SuccessModal from '@/components/Common/SuccessModal/SuccessModal'
+import RestaurantSuccessModal from '@/components/Common/SuccessModal/RestaurantSuccessModal'
+import RestaurantWarningModal from '@/components/Common/WarningModal/RestaurantWarningModal'
 
 type ModalType = 'create' | 'edit'
 
@@ -51,19 +51,33 @@ export default function RestaurantModal({
   onClose,
   modalType,
   restaurantId,
+  defaultName = '',
+  defaultFoodType = '',
+  defaultAddress = '',
+  defaultProvince = '',
+  defaultPostalCode = '',
+  defaultTelephone = '',
+  defaultImageUrl = '',
 }: {
   isVisible: boolean
   onClose: () => void
   modalType: ModalType
   restaurantId?: string
+  defaultName?: string
+  defaultFoodType?: string
+  defaultAddress?: string
+  defaultProvince?: string
+  defaultPostalCode?: string
+  defaultTelephone?: string
+  defaultImageUrl?: string
 }) {
-  const [name, setName] = useState('')
-  const [foodType, setFoodType] = useState('')
-  const [address, setAddress] = useState('')
-  const [province, setProvince] = useState('')
-  const [postalCode, setPostalCode] = useState('')
-  const [telephone, setTelephone] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
+  const [name, setName] = useState(defaultName)
+  const [foodType, setFoodType] = useState(defaultFoodType)
+  const [address, setAddress] = useState(defaultAddress)
+  const [province, setProvince] = useState(defaultProvince)
+  const [postalCode, setPostalCode] = useState(defaultPostalCode)
+  const [telephone, setTelephone] = useState(defaultTelephone)
+  const [imageUrl, setImageUrl] = useState(defaultImageUrl)
 
   const [isNameError, setIsNameError] = useState(false)
   const [isAddressError, setIsAddressError] = useState(false)
@@ -152,6 +166,7 @@ export default function RestaurantModal({
                 placeholder={placeholderMessage['name']}
                 isError={isNameError}
                 errorMessage={errorMessage['name']}
+                defaultValue={name}
               />
             </div>
           </div>
@@ -164,6 +179,7 @@ export default function RestaurantModal({
                 name={'food-type'}
                 onChange={(value) => setFoodType(value)}
                 placeholder={placeholderMessage['foodType']}
+                defaultValue={foodType}
               />
             </div>
           </div>
@@ -179,6 +195,7 @@ export default function RestaurantModal({
                 placeholder={placeholderMessage['address']}
                 isError={isAddressError}
                 errorMessage={errorMessage['address']}
+                defaultValue={address}
               />
             </div>
           </div>
@@ -193,6 +210,7 @@ export default function RestaurantModal({
                 placeholder={placeholderMessage['province']}
                 isError={isProvinceError}
                 errorMessage={errorMessage['province']}
+                defaultValue={province}
               />
             </div>
             <label htmlFor="postal_code" className="w-[15%] text-right ">
@@ -205,6 +223,7 @@ export default function RestaurantModal({
                 placeholder={placeholderMessage['postalCode']}
                 isError={isPostalCodeError}
                 errorMessage={errorMessage['postalCode']}
+                defaultValue={postalCode}
               />
             </div>
           </div>
@@ -219,6 +238,7 @@ export default function RestaurantModal({
                 placeholder={placeholderMessage['telephone']}
                 isError={isTelephoneError}
                 errorMessage={errorMessage['telephone']}
+                defaultValue={telephone}
               />
             </div>
           </div>
@@ -232,6 +252,7 @@ export default function RestaurantModal({
                 name={'image-url'}
                 onChange={(value) => setImageUrl(value)}
                 placeholder={placeholderMessage['imageUrl']}
+                defaultValue={imageUrl}
               />
             </div>
           </div>
@@ -259,21 +280,22 @@ export default function RestaurantModal({
           </div>
         </div>
       </ModalOverlay>
-      <SuccessModal
+      <RestaurantSuccessModal
         type={modalType === 'create' ? 'CREATE' : 'UPDATE'}
         isVisible={isShowSuccessModal}
         onClose={() => {
           setIsShowSuccessModal(false)
           onClose()
+          window.location.reload()
         }}
-        name={name}
+        restaurantName={name}
       />
       {modalType === 'edit' && (
-        <WarningModal
+        <RestaurantWarningModal
           type={'UPDATE'}
           isVisible={isShowWarningModal}
-          onClose_Dismiss={() => setIsShowWarningModal(false)}
-          onClose_Confirm={async () => {
+          onDismiss={() => setIsShowWarningModal(false)}
+          onConfirm={async () => {
             await handleConfirmEdit(restaurantId ?? '', {
               name,
               address,
@@ -286,7 +308,7 @@ export default function RestaurantModal({
             setIsShowWarningModal(false)
             setIsShowSuccessModal(true)
           }}
-          id={restaurantId ?? ''}
+          restaurantName={name}
         />
       )}
     </>
