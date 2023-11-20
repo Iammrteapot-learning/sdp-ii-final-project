@@ -1,42 +1,23 @@
 'use client'
 import RestaurantResult from '@/components/UserPage/RestaurantResult/RestaurantResult'
 import SearchBar from '@/components/UserPage/SearchBar/SearchBar'
+import { RestaurantService } from '@/services/RestaurantService'
 import searchFilter from '@/services/RestaurantService/searchFilter'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function UserRestaurantsPage() {
-  //mock data
-  const res_1 = {
-    id: '001',
-    name: 'Enoteca Italian restaurant',
-    img: '/images/italian.png',
-    foodType: 'Italian cuisine',
-    province: 'Bangkok',
-  }
-  const res_2 = {
-    id: '001',
-    name: 'Enoteca Italian restaurant',
-    img: '/images/italian.png',
-    foodType: 'Italian cuisine',
-    province: 'Krabi',
-  }
-  const res_3 = {
-    id: '001',
-    name: 'Enoteca Italian restaurant',
-    img: '/images/italian.png',
-    foodType: 'Italian cuisine',
-    province: 'Phuket',
-  }
-  const res_4 = {
-    id: '001',
-    name: 'Enoteca Italian restaurant',
-    img: '/images/italian.png',
-    foodType: 'Italian cuisine',
-    province: 'Chiangmai',
-  }
-  const res_list = [res_1, res_2, res_3, res_4]
-  const [filterList,setFilterList] = useState<object[]>(res_list)
+  const [restaurants, setRestaurants] = useState<object[]>([])
+  const [filterList, setFilterList] = useState<object[]>(restaurants)
+  
+  useEffect(() => {
+    const fetchRestaurantList = async () => {
+      const restaurants = await RestaurantService.getAllRestaurants()
+      setRestaurants(restaurants)
+      setFilterList(restaurants)
+    }
+    fetchRestaurantList()
+  }, [setRestaurants, RestaurantService.getAllRestaurants])
 
   return (
     <div className="w-full flex flex-col justify-center items-center mt-8">
@@ -46,7 +27,11 @@ export default function UserRestaurantsPage() {
       >
         FIND YOUR RESTAURANTS
       </div>
-      <SearchBar onChange={(searchWord:string) => setFilterList(searchFilter({res_list,searchWord}))}/>
+      <SearchBar
+        onChange={(searchWord: string) =>
+          setFilterList(searchFilter({ res_list: restaurants, searchWord }))
+        }
+      />
       <div className="flex flex-row w-[1000px] justify-around flex-wrap content-around p-4 m-4">
         {filterList.map((res: Object) => (
           <Link
@@ -55,9 +40,9 @@ export default function UserRestaurantsPage() {
           >
             <RestaurantResult
               name={res.name}
-              foodType={res.foodType}
+              foodType={res.foodtype.split(',').filter((tag) => tag.trim())}
               province={res.province}
-              img={res.img}
+              img={res.picture}
             />
           </Link>
         ))}

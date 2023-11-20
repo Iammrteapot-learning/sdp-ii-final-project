@@ -1,10 +1,12 @@
 import Tag from "@/components/Common/Tag/Tag";
 import Image from 'next/image'
 
-export default function RestaurantResult({name,foodType,province,img}:{name:string,foodType:string,province:string,img:string}) {
+export default function RestaurantResult({name,foodType,province,img}:{name:string,foodType:string [],province:string,img:string}) {
+  const isImageUrl = (url: string): boolean => /\.(jpeg|jpg|gif|png|bmp)$/i.test(url);
+  if(!isImageUrl(img)){img = ""}
   return (
-    <div className="w-fit h-[283px] relative shadow bg-white rounded hover:border-4 hover:border-sky-200" >
-      <div className="w-[230px] h-[195px] relative bg-zinc-200">
+    <div className="w-fit h-auto relative shadow bg-white rounded hover:border-4 hover:border-sky-200" >
+      <div className="w-[270px] h-[195px] relative bg-zinc-200">
         {!!img ? <Image
           className="rounded-tl rounded-tr"
           src={img}
@@ -23,8 +25,8 @@ export default function RestaurantResult({name,foodType,province,img}:{name:stri
         <div className="text-red-500 text-md font-bold font-['Helvetica Neue'] leading-[27px]">
           {name}
         </div>
-        <div className="flex flex-row space-x-3 justify-start">
-            <Tag label={foodType}/>
+        <div className="relative flex flex-row flex-wrap justify-start items-center gap-2">
+            {foodType.map((food) => <Tag label={food}/>)}
             <Tag label={province}/>
         </div>
       </div>

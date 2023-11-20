@@ -10,8 +10,8 @@ export default function Address({
   tel: string
 }) {
   return (
-    <div className="w-[700px] h-fit relative p-5 bg-zinc-100 rounded-[20px] flex flex-col justify-start items-start">
-      <div className="relative flex flex-row space-x-5">
+    <div className="w-fit h-fit relative p-5 bg-zinc-100 rounded-[20px] flex flex-col justify-start items-start">
+      <div className="relative flex justify-start items-start space-x-5">
         <svg
           width="35"
           height="35"
@@ -27,7 +27,7 @@ export default function Address({
           />
         </svg>
 
-        <div className=" flex flex-col justify-start items-start">
+        <div className="w-fit flex flex-col justify-start items-start">
           <div className="relative text-black text-base font-light font-['Helvetica Neue'] leading-normal">
             {address}
           </div>
