@@ -14,6 +14,8 @@ import {
   RestaurantInformation,
   RestaurantService,
 } from '@/services/RestaurantService'
+import { useSession } from 'next-auth/react'
+import { BookingRequestBody, BookingService } from '@/services/BookingService'
 
 const defaultRestaurant: RestaurantInformation = {
   name: '',
@@ -33,6 +35,7 @@ export default function UserRestaurantDetailPage({
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
   const [pickDate, setPickDate] = useState<Dayjs | null>(null)
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
   const [participants, setParticipants] = useState(0)
   const [restaurant, setRestaurant] =
     useState<RestaurantInformation>(defaultRestaurant)
@@ -47,8 +50,26 @@ export default function UserRestaurantDetailPage({
     fetchRestaurant()
   }, [setRestaurant, RestaurantService.getRestaurantById])
 
-  const foodType = restaurant.foodtype.split(',').filter((tag) => tag.trim())
+  const handleConfirmCreate = async (
+    requestBody: BookingRequestBody,
+    restaurantId: string,
+    token: string
+  ): Promise<boolean> => {
+    try {
+      return await BookingService.createBooking(
+        requestBody,
+        restaurantId,
+        token
+      )
+    } catch (error) {
+      console.log(error)
+    }
+    return false
+  }
 
+  const foodType = restaurant.foodtype.split(',').filter((tag) => tag.trim())
+  const { data: session } = useSession()
+  if(!session){return;}
   return (
     <div className="flex justify-center items-center mt-8">
       <div className="w-fit flex flex-col p-3 justify-center justify-self-center">
@@ -102,9 +123,23 @@ export default function UserRestaurantDetailPage({
         }
         tel={restaurant.tel}
         isVisible={isReservationModalOpen}
-        onConfirm={() => {
+        onConfirm={async function ({
+          bookingDate,
+          numOfGuests,
+          createdAt,
+        }: BookingRequestBody) {
+          if (
+            await handleConfirmCreate(
+              { bookingDate, numOfGuests, createdAt },
+              params.restaurantId,
+              session.user.token
+            )
+          ) {
+            setIsSuccessModalOpen(true)
+          } else {
+            setIsErrorModalOpen(true)
+          }
           setIsReservationModalOpen(false)
-          setIsSuccessModalOpen(true)
         }}
         onClose={() => setIsReservationModalOpen(false)}
         onDateNumberChange={(date: Dayjs | null, number: number) => {

@@ -73,7 +73,7 @@ export default function UserReservationsPage() {
           />
         ))}
       </div>
-      <ReservationModal
+      {/* <ReservationModal
         name={reservations[focusReserve].restaurant.name}
         address={
           reservations[focusReserve].restaurant.address +
@@ -93,7 +93,7 @@ export default function UserReservationsPage() {
           setPickDate(date)
           setParticipants(number)
         }}
-      />
+      /> */}
       <WarningModal
         type={type === 'CREATE' ? 'UPDATE' : type}
         isVisible={isWarningModalOpen}
