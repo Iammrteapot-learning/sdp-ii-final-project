@@ -71,7 +71,7 @@ export default function SignUpForm({
   return (
     <form
       className="
-    bg-white w-[350px] rounded-[4px] py-[22px] px-[32px]
+    bg-white w-[350px] h-[510px] overflow-scroll no-scrollbar rounded-[4px] py-[22px] px-[32px]
     flex flex-col items-center justify-between"
     >
       <div className="flex flex-col w-full">
