@@ -6,33 +6,37 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import ReservationModal from '@/components/Common/ReservationModal/ReservationModal'
 import dayjs, { Dayjs } from 'dayjs'
-import { Booking, BookingService } from '@/services/BookingService'
+import {
+  Booking,
+  BookingRequestBody,
+  BookingService,
+} from '@/services/BookingService'
+import ErrorModal from '@/components/Common/ErrorModal/ErrorModal'
 
 export default function UserReservationsPage() {
   //add DELETE api on onClose_Confirm (warning delete modal)
   const [reservations, setReservations] = useState<Booking[]>([])
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false)
   const [type, setType] = useState<'CREATE' | 'UPDATE' | 'DELETE'>('UPDATE')
   const [isReservationModalOpen, setIsReservationModalOpen] = useState(false)
-  const [focusReserve, setFocusReserve] = useState(0)
+  const [focusReserve, setFocusReserve] = useState<number>(0)
   const [pickDate, setPickDate] = useState<Dayjs>(dayjs())
   const [participants, setParticipants] = useState(0)
+  const [editFunction, setEditFunction] = useState<() => void>(() => () => {})
   const { data: session } = useSession()
-  if (!session) {
+  if (!session || !session.user.token) {
     return
   }
   useEffect(() => {
     const fetchReservations = async () => {
       const reserves = await BookingService.getAllBookings(session.user.token)
       setReservations(reserves)
+      setFocusReserve(0)
     }
     fetchReservations()
-  }, [
-    session,
-    setReservations,
-    BookingService.getAllBookings(session.user.token),
-  ])
+  }, [session, setReservations, BookingService.getAllBookings])
 
   const handleConfirmDelete = async (bookingId: string, token: string) => {
     try {
@@ -40,6 +44,23 @@ export default function UserReservationsPage() {
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const handleConfirmEdit = async (
+    bookingId: string,
+    requestBody: BookingRequestBody,
+    token: string
+  ): Promise<boolean> => {
+    try {
+      return await BookingService.editBookingByBookingId(
+        bookingId,
+        requestBody,
+        token
+      )
+    } catch (error) {
+      console.log(error)
+    }
+    return false
   }
 
   return (
@@ -73,18 +94,35 @@ export default function UserReservationsPage() {
           />
         ))}
       </div>
-      {/* <ReservationModal
-        name={reservations[focusReserve].restaurant.name}
+      <ReservationModal
+        name={reservations[focusReserve]?.restaurant.name}
         address={
-          reservations[focusReserve].restaurant.address +
+          reservations[focusReserve]?.restaurant.address +
           ' ' +
-          reservations[focusReserve].restaurant.province +
+          reservations[focusReserve]?.restaurant.province +
           ' ' +
-          reservations[focusReserve].restaurant.postalcode
+          reservations[focusReserve]?.restaurant.postalcode
         }
-        tel={reservations[focusReserve].restaurant.tel}
+        tel={reservations[focusReserve]?.restaurant.tel}
         isVisible={isReservationModalOpen}
-        onConfirm={() => {
+        onConfirm={async function ({
+          bookingDate,
+          numOfGuests,
+          createdAt,
+        }: BookingRequestBody) {
+          setEditFunction(() => async () => {
+            if (
+              await handleConfirmEdit(
+                reservations[focusReserve]._id,
+                { bookingDate, numOfGuests, createdAt },
+                session.user.token
+              )
+            ) {
+              setIsSuccessModalOpen(true)
+            } else {
+              setIsErrorModalOpen(true)
+            }
+          })
           setIsReservationModalOpen(false)
           setIsWarningModalOpen(true)
         }}
@@ -93,7 +131,7 @@ export default function UserReservationsPage() {
           setPickDate(date)
           setParticipants(number)
         }}
-      /> */}
+      />
       <WarningModal
         type={type === 'CREATE' ? 'UPDATE' : type}
         isVisible={isWarningModalOpen}
@@ -101,19 +139,35 @@ export default function UserReservationsPage() {
         onConfirm={async () => {
           //if delete DELETE using myReserve[focusReserve].reserve_id
           //if update POST using update date pickDate and participants
-          setIsWarningModalOpen(false)
-          await handleConfirmDelete(
-            reservations[focusReserve]._id ?? '',
-            session.user.token
-          )
-          setIsSuccessModalOpen(true)
+          if (type == 'DELETE') {
+            setIsWarningModalOpen(false)
+            await handleConfirmDelete(
+              reservations[focusReserve]._id ?? '',
+              session.user.token
+            )
+            setIsSuccessModalOpen(true)
+          } else if (type == 'UPDATE') {
+            await editFunction()
+          }
         }}
         id={reservations[focusReserve]?._id}
       />
       <SuccessModal
         type={type}
         isVisible={isSuccessModalOpen}
-        onClose={() => setIsSuccessModalOpen(false)}
+        onClose={() => {
+          setIsSuccessModalOpen(false)
+          setIsWarningModalOpen(false)
+          window.location.reload()
+        }}
+      />
+      <ErrorModal
+        isVisible={isErrorModalOpen}
+        onClose={() => {
+          setIsErrorModalOpen(false)
+          setIsReservationModalOpen(false)
+        }}
+        message={'Error Occur while modifying reservation'}
       />
     </div>
   )
