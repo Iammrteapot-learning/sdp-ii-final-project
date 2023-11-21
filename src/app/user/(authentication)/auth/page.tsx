@@ -10,56 +10,60 @@ export default function UserAuthPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   return (
-    <div className="flex p-[100px] justify-center items-center bg-orange-300 min-h-[101vh] overflow-hidden">
+    <main className="flex p-[100px] justify-center items-center bg-[url('/images/AuthBackground.png')] min-h-[120vh] overflow-hidden">
       {isSignInFormDisplayed && (
-        <SignInForm
-          handleSignIn={async (email, password) => {
-            setIsLoading(true)
-            try {
-              signIn('credentials', {
-                email,
-                password,
-                redirect: true,
-                callbackUrl: '/user/restaurants',
-              })
-            } catch (error) {
-              alert(error)
-            }
-            setIsLoading(false)
-          }}
-          handleCreateNewAccount={() => setIsSignInFormDisplayed(false)}
-          isLoading={isLoading}
-        />
-      )}
-      {!isSignInFormDisplayed && (
-        <SignUpForm
-          handleSignUp={async ({ username, tel, email, password }) => {
-            setIsLoading(true)
-            try {
-              const response = await AuthService.register({
-                email,
-                password,
-                tel,
-                role: 'user',
-                name: username,
-              })
-              if (response.success) {
+        <div className="fixed top-[25vh] right-[10vw]">
+          <SignInForm
+            handleSignIn={async (email, password) => {
+              setIsLoading(true)
+              try {
                 signIn('credentials', {
                   email,
                   password,
                   redirect: true,
                   callbackUrl: '/user/restaurants',
                 })
+              } catch (error) {
+                alert(error)
               }
-            } catch (error) {
-              alert(error)
-            }
-            setIsLoading(false)
-          }}
-          handleBackToSignIn={() => setIsSignInFormDisplayed(true)}
-          isLoading={isLoading}
-        />
+              setIsLoading(false)
+            }}
+            handleCreateNewAccount={() => setIsSignInFormDisplayed(false)}
+            isLoading={isLoading}
+          />
+        </div>
       )}
-    </div>
+      {!isSignInFormDisplayed && (
+        <div className="fixed top-[8vh] right-[10vw]">
+          <SignUpForm
+            handleSignUp={async ({ username, tel, email, password }) => {
+              setIsLoading(true)
+              try {
+                const response = await AuthService.register({
+                  email,
+                  password,
+                  tel,
+                  role: 'user',
+                  name: username,
+                })
+                if (response.success) {
+                  signIn('credentials', {
+                    email,
+                    password,
+                    redirect: true,
+                    callbackUrl: '/user/restaurants',
+                  })
+                }
+              } catch (error) {
+                alert(error)
+              }
+              setIsLoading(false)
+            }}
+            handleBackToSignIn={() => setIsSignInFormDisplayed(true)}
+            isLoading={isLoading}
+          />
+        </div>
+      )}
+    </main>
   )
 }
