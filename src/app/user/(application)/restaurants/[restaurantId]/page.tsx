@@ -16,6 +16,7 @@ import {
 } from '@/services/RestaurantService'
 import { useSession } from 'next-auth/react'
 import { BookingRequestBody, BookingService } from '@/services/BookingService'
+import ErrorModal from '@/components/Common/ErrorModal/ErrorModal'
 
 const defaultRestaurant: RestaurantInformation = {
   name: '',
@@ -154,6 +155,14 @@ export default function UserRestaurantDetailPage({
         name={restaurant.name}
         date={dayjs(pickDate).format('YYYY/MM/DD')}
         number={participants}
+      />
+      <ErrorModal
+        isVisible={isErrorModalOpen}
+        onClose={() => {
+          setIsErrorModalOpen(false)
+          setIsReservationModalOpen(false)
+        }}
+        message={'You have reached the maximum number of reservations.'}
       />
     </div>
   )
