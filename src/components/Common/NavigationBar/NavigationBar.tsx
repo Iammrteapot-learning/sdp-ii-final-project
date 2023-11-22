@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react'
 import LogOutButton from './LogOutButton'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function NavigationBar() {
   const { data: session } = useSession()
@@ -15,8 +16,16 @@ export default function NavigationBar() {
     justify-between items-center fixed top-0 left-0 z-[10000]
     px-4 text-white"
     >
-      <div className="flex gap-6">
-        <div>ICON</div>
+      <div className="flex gap-6 items-center">
+        <div>
+          <Image
+            src={'/images/logo.png'}
+            alt="logo"
+            width={100}
+            height={56}
+            objectFit="contain"
+          />
+        </div>
         <Link
           href={
             session.user.role === 'user'
