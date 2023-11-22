@@ -30,19 +30,23 @@ export default function UserReservationsPage() {
     return
   }
   useEffect(() => {
-    const fetchReservations = async () => {
-      const reserves = await BookingService.getAllBookings(session.user.token)
-      setReservations(reserves)
-      setFocusReserve(0)
+    try {
+      const fetchReservations = async () => {
+        const reserves = await BookingService.getAllBookings(session.user.token)
+        setReservations(reserves)
+        setFocusReserve(0)
+      }
+      fetchReservations()
+    } catch (error) {
+      alert(error)
     }
-    fetchReservations()
   }, [session, setReservations, BookingService.getAllBookings])
 
   const handleConfirmDelete = async (bookingId: string, token: string) => {
     try {
       await BookingService.deleteBookingByBookingId(bookingId, token)
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
   }
 
@@ -58,7 +62,7 @@ export default function UserReservationsPage() {
         token
       )
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
     return false
   }

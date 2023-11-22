@@ -1,20 +1,28 @@
 'use client'
 import RestaurantResult from '@/components/UserPage/RestaurantResult/RestaurantResult'
 import SearchBar from '@/components/UserPage/SearchBar/SearchBar'
-import { RestaurantService } from '@/services/RestaurantService'
+import {
+  RestaurantInformation,
+  RestaurantService,
+} from '@/services/RestaurantService'
 import searchFilter from '@/services/RestaurantService/searchFilter'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 export default function UserRestaurantsPage() {
-  const [restaurants, setRestaurants] = useState<object[]>([])
-  const [filterList, setFilterList] = useState<object[]>(restaurants)
-  
+  const [restaurants, setRestaurants] = useState<RestaurantInformation[]>([])
+  const [filterList, setFilterList] =
+    useState<RestaurantInformation[]>(restaurants)
+
   useEffect(() => {
     const fetchRestaurantList = async () => {
-      const restaurants = await RestaurantService.getAllRestaurants()
-      setRestaurants(restaurants)
-      setFilterList(restaurants)
+      try {
+        const restaurants = await RestaurantService.getAllRestaurants()
+        setRestaurants(restaurants)
+        setFilterList(restaurants)
+      } catch (error) {
+        alert(error)
+      }
     }
     fetchRestaurantList()
   }, [setRestaurants, RestaurantService.getAllRestaurants])
@@ -33,7 +41,7 @@ export default function UserRestaurantsPage() {
         }
       />
       <div className="flex flex-row w-[1000px] justify-around flex-wrap content-around p-4 m-4">
-        {filterList.map((res: Object) => (
+        {filterList.map((res) => (
           <Link
             href={`/user/restaurants/${res.id}`}
             className="w-[51%] sm:w-[58%] md:w-[35%] lg:w-[30%] p-1 sm:p-2 md:p-2 lg:p-4"

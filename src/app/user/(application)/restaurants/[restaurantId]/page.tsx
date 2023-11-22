@@ -46,8 +46,14 @@ export default function UserRestaurantDetailPage({
 
   useEffect(() => {
     const fetchRestaurant = async () => {
-      const res = await RestaurantService.getRestaurantById(params.restaurantId)
-      setRestaurant(res)
+      try {
+        const res = await RestaurantService.getRestaurantById(
+          params.restaurantId
+        )
+        setRestaurant(res)
+      } catch (error) {
+        alert(error)
+      }
     }
     fetchRestaurant()
   }, [setRestaurant, RestaurantService.getRestaurantById])
@@ -64,14 +70,16 @@ export default function UserRestaurantDetailPage({
         token
       )
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
     return false
   }
 
   const foodType = restaurant.foodtype.split(',').filter((tag) => tag.trim())
   const { data: session } = useSession()
-  if(!session){return;}
+  if (!session) {
+    return
+  }
   return (
     <div className="flex justify-center items-center mt-8">
       <div className="w-fit flex flex-col p-3 justify-center justify-self-center">
