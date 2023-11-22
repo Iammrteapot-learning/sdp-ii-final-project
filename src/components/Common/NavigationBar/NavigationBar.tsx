@@ -6,7 +6,7 @@ import Image from 'next/image'
 
 export default function NavigationBar() {
   const { data: session } = useSession()
-  if (!session) {
+  if (!session || !session.user.token) {
     return null
   }
 
