@@ -14,7 +14,7 @@ import {
 import ErrorModal from '@/components/Common/ErrorModal/ErrorModal'
 
 export default function UserReservationsPage() {
-  //add DELETE api on onClose_Confirm (warning delete modal)
+  const [rawReservations, setRawReservations] = useState<Booking[]>([])
   const [reservations, setReservations] = useState<Booking[]>([])
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false)
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false)
@@ -32,11 +32,24 @@ export default function UserReservationsPage() {
   useEffect(() => {
     const fetchReservations = async () => {
       const reserves = await BookingService.getAllBookings(session.user.token)
-      setReservations(reserves)
+      setRawReservations(reserves)
       setFocusReserve(0)
     }
     fetchReservations()
-  }, [session, setReservations, BookingService.getAllBookings])
+  }, [session.user.token, setRawReservations, BookingService.getAllBookings])
+
+  useEffect(() => {
+    const filterReservations = () => {
+      const filteredReservations = rawReservations.filter((res) => {
+        return res.user._id === session.user._id
+      })
+
+      console.log('filtered! ', session.user)
+      console.log(filteredReservations)
+      setReservations(filteredReservations)
+    }
+    filterReservations()
+  }, [rawReservations, session.user._id, setReservations])
 
   const handleConfirmDelete = async (bookingId: string, token: string) => {
     try {
