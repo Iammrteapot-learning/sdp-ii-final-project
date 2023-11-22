@@ -7,7 +7,7 @@ import Address from '@/components/UserPage/AddressComponent/Address'
 import BookNowButton from '@/components/UserPage/BookNowButton/BookNowButton'
 import ReservationNoti from '@/components/UserPage/ReservationNotification/ReservationNoti'
 import RestaurantImage from '@/components/UserPage/RestaurantImage/RestaurantImage'
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
 import {
@@ -17,6 +17,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { BookingRequestBody, BookingService } from '@/services/BookingService'
 import ErrorModal from '@/components/Common/ErrorModal/ErrorModal'
+import { LinearProgress } from '@mui/material'
 
 const defaultRestaurant: RestaurantInformation = {
   name: '',
