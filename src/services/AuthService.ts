@@ -48,7 +48,6 @@ export const AuthService = {
     registerRequestBody: RegisterRequestBody
   ): Promise<RegisterResponseBody> => {
     const url = `${serviceConfig.backendBaseUrl}/api/v1/auth/register`
-    console.log(url)
     const response = await fetch(url, {
       method: 'POST',
       headers: {

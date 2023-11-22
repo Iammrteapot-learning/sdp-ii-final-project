@@ -66,7 +66,6 @@ export default function AuthRestaurantDetailPage({
   const router = useRouter()
   const { data: session } = useSession()
   if (!session || session.user.role !== 'admin') {
-    alert('Please login to access this page')
     router.push('/admin/auth')
     return
   }
@@ -101,7 +100,7 @@ export default function AuthRestaurantDetailPage({
         token
       )
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
     return false
   }
@@ -118,7 +117,7 @@ export default function AuthRestaurantDetailPage({
         token
       )
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
     return false
   }
@@ -127,7 +126,7 @@ export default function AuthRestaurantDetailPage({
     try {
       return await BookingService.deleteBookingByBookingId(bookingId, token)
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
     return false
   }
@@ -140,7 +139,7 @@ export default function AuthRestaurantDetailPage({
         )
         setRestaurantInfo(response)
       } catch (error) {
-        console.log(error)
+        alert(error)
       }
     }
     fetchRestaurantInfo()
@@ -167,7 +166,7 @@ export default function AuthRestaurantDetailPage({
           })
         )
       } catch (error) {
-        console.log(error)
+        alert(error)
       }
     }
     fetchReservationList()

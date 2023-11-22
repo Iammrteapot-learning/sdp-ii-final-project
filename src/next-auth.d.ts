@@ -4,7 +4,7 @@ export type AppRole = 'user' | 'admin'
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: string
+      _id: string
       email: string
       name: string
       role: AppRole

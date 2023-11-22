@@ -55,7 +55,6 @@ export default function AdminRestaurantsPage() {
   const router = useRouter()
   const { data: session } = useSession()
   if (!session || session.user.role !== 'admin') {
-    alert('Please login to access this page')
     router.push('/admin/auth')
     return
   }
@@ -67,7 +66,7 @@ export default function AdminRestaurantsPage() {
     try {
       await RestaurantService.createRestaurant(requestBody, token)
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
   }
 
@@ -79,7 +78,7 @@ export default function AdminRestaurantsPage() {
     try {
       await RestaurantService.editRestaurantById(restaurantId, request, token)
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
   }
 
@@ -87,18 +86,22 @@ export default function AdminRestaurantsPage() {
     try {
       await RestaurantService.deleteRestaurantById(restaurantId, token)
     } catch (error) {
-      console.log(error)
+      alert(error)
     }
   }
 
   useEffect(() => {
     const fetchRestaurantList = async () => {
-      const restaurants = await RestaurantService.getAllRestaurants()
-      const restaurantListWithFlag = restaurants.map((restaurant) => ({
-        ...restaurant,
-        isShow: true,
-      }))
-      setRestaurantList(restaurantListWithFlag)
+      try {
+        const restaurants = await RestaurantService.getAllRestaurants()
+        const restaurantListWithFlag = restaurants.map((restaurant) => ({
+          ...restaurant,
+          isShow: true,
+        }))
+        setRestaurantList(restaurantListWithFlag)
+      } catch (error) {
+        alert(error)
+      }
     }
     fetchRestaurantList()
   }, [setRestaurantList, RestaurantService.getAllRestaurants])
@@ -236,7 +239,6 @@ export default function AdminRestaurantsPage() {
                 },
                 session.user.token
               )
-              console.log('awaited')
             })
             setWarningType('UPDATE')
             setIsShowWarningModal(true)
