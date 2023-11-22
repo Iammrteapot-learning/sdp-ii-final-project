@@ -236,7 +236,6 @@ export default function AdminRestaurantsPage() {
                 },
                 session.user.token
               )
-              console.log('awaited')
             })
             setWarningType('UPDATE')
             setIsShowWarningModal(true)

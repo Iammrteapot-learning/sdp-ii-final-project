@@ -43,9 +43,6 @@ export default function UserReservationsPage() {
       const filteredReservations = rawReservations.filter((res) => {
         return res.user._id === session.user._id
       })
-
-      console.log('filtered! ', session.user)
-      console.log(filteredReservations)
       setReservations(filteredReservations)
     }
     filterReservations()
