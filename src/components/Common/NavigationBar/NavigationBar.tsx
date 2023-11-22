@@ -3,10 +3,14 @@ import { useSession } from 'next-auth/react'
 import LogOutButton from './LogOutButton'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname, useRouter } from 'next/navigation'
 
 export default function NavigationBar() {
+  const router = useRouter()
+  const pathPrefix = usePathname().split('/').filter(Boolean)[0]
   const { data: session } = useSession()
-  if (!session || !session.user.token) {
+  if (!session || !session.user.token || session.user.role !== pathPrefix) {
+    router.push(`/${pathPrefix}/auth`)
     return null
   }
 
