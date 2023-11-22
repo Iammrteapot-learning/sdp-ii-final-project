@@ -30,16 +30,16 @@ export default function UserReservationsPage() {
     return
   }
   useEffect(() => {
-    try {
-      const fetchReservations = async () => {
+    const fetchReservations = async () => {
+      try {
         const reserves = await BookingService.getAllBookings(session.user.token)
         setReservations(reserves)
         setFocusReserve(0)
+      } catch (error) {
+        alert(error)
       }
-      fetchReservations()
-    } catch (error) {
-      alert(error)
     }
+    fetchReservations()
   }, [session, setReservations, BookingService.getAllBookings])
 
   const handleConfirmDelete = async (bookingId: string, token: string) => {
