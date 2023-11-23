@@ -13,7 +13,7 @@ export default function RestaurantImage({
   const [hovering, setHovering] = useState(false)
   const ViewDetailLabel = () => {
     return (
-      <Link href={`/admin/restaurants/${res_id}`}>
+      <Link href={`/user/restaurants/${res_id}`}>
         <div
           className="w-[60%] h-[18px] left-[63px] bottom-[2px] absolute bg-zinc-400 rounded-[20px]"
           onMouseEnter={() => setHovering(true)}

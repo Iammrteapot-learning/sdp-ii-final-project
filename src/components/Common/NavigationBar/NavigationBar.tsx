@@ -9,7 +9,7 @@ export default function NavigationBar() {
   const router = useRouter()
   const pathPrefix = usePathname().split('/').filter(Boolean)[0]
   const { data: session } = useSession()
-  if (!session || !session.user.token || session.user.role !== pathPrefix) {
+  if (!session || !session.user.token) {
     router.push(`/${pathPrefix}/auth`)
     return null
   }
