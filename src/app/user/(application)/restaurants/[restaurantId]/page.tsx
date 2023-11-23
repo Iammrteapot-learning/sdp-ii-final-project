@@ -41,8 +41,10 @@ export default function UserRestaurantDetailPage({
   const [participants, setParticipants] = useState(0)
   const [restaurant, setRestaurant] =
     useState<RestaurantInformation>(defaultRestaurant)
-  const isImageUrl = (url: string): boolean =>
-    /\.(jpeg|jpg|gif|png|bmp)$/i.test(url)
+  const urlRegex = /(http[s]?:\/\/)?([^\s(["<,>]*\.[^\s[",><]*)/gi
+  const imageUrl = urlRegex.test(restaurant.picture)
+    ? restaurant.picture
+    : '/images/res_reserve_img.png'
 
   useEffect(() => {
     const fetchRestaurant = async () => {
@@ -88,13 +90,7 @@ export default function UserRestaurantDetailPage({
         </div>
         <div className="w-fit flex flex-row space-x-20 mt-12">
           <div className="p-3">
-            <RestaurantImage
-              img={
-                !!restaurant && isImageUrl(restaurant.picture)
-                  ? restaurant.picture
-                  : ''
-              }
-            />
+            <RestaurantImage img={imageUrl} />
           </div>
           <div className="p-3 space-y-4">
             <div className="text-5xl text-red-500 font-medium font-['Helvetica Neue'] leading-[72px]">

@@ -3,10 +3,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
 
-export default function ReservationImage({img,res_id}:{img:string,res_id:string}) {
-  const isImageUrl = (url: string): boolean =>
-    /\.(jpeg|jpg|gif|png|bmp)$/i.test(url)
-  if(!isImageUrl(img)){img = ""}
+export default function ReservationImage({
+  img,
+  res_id,
+}: {
+  img: string
+  res_id: string
+}) {
+  const urlRegex = /(http[s]?:\/\/)?([^\s(["<,>]*\.[^\s[",><]*)/gi
+  const imageUrl = urlRegex.test(img) ? img : '/images/res_reserve_img.png'
   const [hovering, setHovering] = useState(false)
   const ViewDetailLabel = () => {
     return (
@@ -46,21 +51,25 @@ export default function ReservationImage({img,res_id}:{img:string,res_id:string}
 
   return (
     <div className="w-[159px] h-[95px] relative bg-white rounded shadow">
-      {!img ? <div className="w-[159px] h-[95px] rounded-tl rounded-tr rounded-br-[65.50px] bg-zinc-200 flex justify-centers items-center">
+      {imageUrl === '/images/res_reserve_img.png' ? (
+        <div className="w-[159px] h-[95px] rounded-tl rounded-tr rounded-br-[65.50px] bg-zinc-200 flex justify-centers items-center">
+          <Image
+            src={'/images/res_reserve_img.png'}
+            alt="restaurant image"
+            fill={true}
+            objectFit="contain"
+          />
+        </div>
+      ) : (
         <Image
-          src={'/images/res_reserve_img.png'}
+          className="w-[159px] h-[95px] rounded-tl rounded-tr rounded-br-[65.50px]"
+          src={imageUrl}
           alt="restaurant image"
           fill={true}
-          objectFit="contain"
+          objectFit="cover"
         />
-      </div>:<Image
-        className="w-[159px] h-[95px] rounded-tl rounded-tr rounded-br-[65.50px]"
-        src={img}
-        alt="restaurant image"
-        fill={true}
-        objectFit="cover"
-      />}
-      
+      )}
+
       {hovering == true ? <ViewDetailLabel /> : null}
       <Link href={`/user/restaurants/${res_id}`}>
         <button
