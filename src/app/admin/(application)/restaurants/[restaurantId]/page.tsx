@@ -100,7 +100,7 @@ export default function AuthRestaurantDetailPage({
         token
       )
     } catch (error) {
-      alert(error)
+      console.log(error)
     }
     return false
   }

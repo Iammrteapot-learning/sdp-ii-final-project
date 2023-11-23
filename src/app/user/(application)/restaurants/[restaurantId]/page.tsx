@@ -72,7 +72,7 @@ export default function UserRestaurantDetailPage({
         token
       )
     } catch (error) {
-      alert(error)
+      console.log(error)
     }
     return false
   }
