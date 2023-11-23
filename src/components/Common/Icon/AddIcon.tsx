@@ -1,6 +1,7 @@
 export default function AddIcon() {
   return (
     <svg
+      className="hover:rounded-full hover:bg-slate-200"
       xmlns="http://www.w3.org/2000/svg"
       width="50"
       height="50"
