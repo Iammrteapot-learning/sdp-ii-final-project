@@ -106,8 +106,8 @@ export default function ReservationCard({
           {dayjs(date).format('MMM D, YYYY')}
         </div>
       </div>
-      <div className="w-fit bg-zinc-100 rounded-xl p-3">
-        <table className="table-auto border-separate border-spacing-x-10">
+      <div className="w-full bg-zinc-100 rounded-xl p-3">
+        <table className="w-full table-auto border-separate border-spacing-x-10">
           {headerLine()}
           <tbody>{res_list.map((res: Booking) => eachRow(res))}</tbody>
         </table>
