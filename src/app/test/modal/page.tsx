@@ -21,7 +21,7 @@ export default function ModalTest() {
         isVisible={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
       />
-      <ReservationModal
+      {/* <ReservationModal
         address={address}
         tel={tel}
         name={name}
@@ -36,7 +36,7 @@ export default function ModalTest() {
         type={'DELETE'}
         isVisible={isWarningModalOpen}
         onClose={() => setIsWarningModalOpen(false)}
-      />
+      /> */}
       <button
         className="bg-slate-400 w-fit h-fit p-2 rounded-md text-center"
         onClick={() => setIsSuccessModalOpen(true)}

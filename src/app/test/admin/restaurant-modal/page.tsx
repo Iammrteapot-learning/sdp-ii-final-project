@@ -7,7 +7,7 @@ export default function TestRestaurantModal() {
 
   return (
     <div>
-      <button onClick={() => setIsModalOpen(true)}>Open Modal</button>
+      {/* <button onClick={() => setIsModalOpen(true)}>Open Modal</button>
       <RestaurantModal
         isVisible={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -31,7 +31,7 @@ export default function TestRestaurantModal() {
           alert('Doneeeeeeeeeee')
         }}
         modalType="edit"
-      />
+      /> */}
     </div>
   )
 }
